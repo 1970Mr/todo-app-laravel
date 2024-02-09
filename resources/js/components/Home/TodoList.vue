@@ -58,7 +58,6 @@
           </span>
           <div class="flex space-x-2">
             <!-- Edit icon -->
-            <!--  @click="openEditModal(todoItem)" -->
             <button class="text-blue-500 hover:text-blue-700" title="Edit" @click="onEdit(todoItem)">
               <i class="bx bx-edit-alt"></i>
             </button>
@@ -113,7 +112,6 @@ onMounted(() => {
 })
 
 function addTodo(data) {
-
   todoList.value.unshift(data)
 }
 

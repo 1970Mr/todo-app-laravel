@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Todo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class TodoController extends Controller
 {
   public function index()
   {
-    $todoList = Todo::all();
+    $todoList = Todo::orderBy('created_at', 'desc')->get();
     return Inertia::render('HomePage', compact('todoList'));
   }
 

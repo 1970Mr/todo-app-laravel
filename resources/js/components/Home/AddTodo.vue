@@ -20,13 +20,20 @@
 
 <script setup>
 import { ref, defineEmits } from "vue";
-import { generateUniqueID } from '@/utils/helpers.js'
+
 const emit = defineEmits(['addTodo'])
 const newTodo = ref('')
 
 function addTodo() {
   if(!newTodo.value.trim()) return
-  emit('addTodo', {text: newTodo.value, id: generateUniqueID(), success: false, createdAt: Date.now()})
-  newTodo.value = ''
+  const data = {text: newTodo.value, completed: false}
+  axios.post(route('todo.store'), data)
+    .then(response => {
+      emit('addTodo', response.data)
+      newTodo.value = ''
+    })
+    .catch(error => {
+      console.error('Error adding todo:');
+    });
 }
 </script>
