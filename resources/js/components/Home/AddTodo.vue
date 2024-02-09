@@ -19,21 +19,19 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from "vue";
+import {ref, defineEmits} from "vue";
+import TodoApi from "@/Apis/TodoApi.js";
 
 const emit = defineEmits(['addTodo'])
 const newTodo = ref('')
 
-function addTodo() {
-  if(!newTodo.value.trim()) return
+async function addTodo() {
+  if (!newTodo.value.trim()) return
   const data = {text: newTodo.value, completed: false}
-  axios.post(route('todo.store'), data)
-    .then(response => {
-      emit('addTodo', response.data)
-      newTodo.value = ''
-    })
-    .catch(error => {
-      console.error('Error adding todo:');
-    });
+  const response = await TodoApi.store(data)
+  if (response?.status) {
+    emit('addTodo', response.data)
+    newTodo.value = ''
+  }
 }
 </script>
