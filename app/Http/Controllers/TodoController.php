@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Todo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class TodoController extends Controller
@@ -17,6 +18,11 @@ class TodoController extends Controller
 
   public function store(Request $request)
   {
+    $validator = Validator::make($request->all(), [
+      'text' => 'required|string|max:255',
+    ]);
+    if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
+
     $todo = Todo::create($request->all());
     return response()->json($todo, 201);
   }
@@ -29,7 +35,11 @@ class TodoController extends Controller
 
   public function destroy(Todo $todo)
   {
-    $todo->delete();
-    return response()->json(null, 204);
+    try {
+      $todo->delete();
+      return response()->json(null, 204);
+    } catch (\Exception $e) {
+      return response()->json(['errors' => $e->getMessage()], 422);
+    }
   }
 }
