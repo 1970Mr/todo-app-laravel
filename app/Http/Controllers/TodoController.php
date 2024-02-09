@@ -8,25 +8,29 @@ use Inertia\Inertia;
 
 class TodoController extends Controller
 {
-    public function index() {
-        $todos = Todo::all();
-        return Inertia::render('HomePage', compact('todos'));
-    }
+  public function index()
+  {
+    $todoList = Todo::all();
+    return Inertia::render('HomePage', compact('todoList'));
+  }
 
-    public function store(Request $request) {
-        // Todo: validation
-        $todo = Todo::create($request->all());
-        return response()->json($todo, 201);
-    }
+  public function store(Request $request)
+  {
+    // Todo: validation
+    $todo = Todo::create($request->all());
+    return response()->json($todo, 201);
+  }
 
-    public function update(Request $request, Todo $todo) {
-        // Todo: validation
-        $todo->update($request->all());
-        return response()->json($todo, 200);
-    }
+  public function update(Request $request, Todo $todo)
+  {
+    // Todo: validation
+    $todo->update($request->all());
+    return response()->json($todo, 200);
+  }
 
-    public function destroy(Todo $todo) {
-        $todo->delete();
-        return response()->json(null, 204);
-    }
+  public function destroy(Todo $todo)
+  {
+    $todo->delete();
+    return response()->json(null, 204);
+  }
 }
