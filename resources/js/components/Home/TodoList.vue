@@ -97,6 +97,7 @@ import AddTodo from "@/components/Home/AddTodo.vue"
 import ConfirmModal from "@/components/ConfirmModal.vue"
 import FilterTodo from "@/components/Home/FilterTodo.vue"
 import {onMounted, ref} from "vue"
+import TodoApi from "@/Apis/TodoApi.js";
 
 const props = defineProps([
   'todoList'
@@ -123,7 +124,9 @@ function closeDeleteModal() {
   selectedTodoItem.value = null
 }
 
-function deleteTodoItem() {
+async function deleteTodoItem() {
+  const response = await TodoApi.destroy(selectedTodoItem.value.id)
+  if (!response?.status) return
   todoList.value = todoList.value.filter(
     (item) => item.id !== selectedTodoItem.value.id
   )

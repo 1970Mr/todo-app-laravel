@@ -29,9 +29,8 @@ async function addTodo() {
   if (!newTodo.value.trim()) return
   const data = {text: newTodo.value, completed: false}
   const response = await TodoApi.store(data)
-  if (response?.status) {
-    emit('addTodo', response.data)
-    newTodo.value = ''
-  }
+  if (!response?.status) return
+  emit('addTodo', response.data)
+  newTodo.value = ''
 }
 </script>

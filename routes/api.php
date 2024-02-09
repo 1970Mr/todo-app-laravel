@@ -15,3 +15,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('todo', [TodoController::class, 'store'])->name('todo.store');
+Route::delete('todo/{todo}', [TodoController::class, 'destroy'])->name('todo.destroy');

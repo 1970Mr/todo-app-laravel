@@ -17,14 +17,12 @@ class TodoController extends Controller
 
   public function store(Request $request)
   {
-    // Todo: validation
     $todo = Todo::create($request->all());
     return response()->json($todo, 201);
   }
 
   public function update(Request $request, Todo $todo)
   {
-    // Todo: validation
     $todo->update($request->all());
     return response()->json($todo, 200);
   }
