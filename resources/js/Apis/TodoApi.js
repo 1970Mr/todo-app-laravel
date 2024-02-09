@@ -4,7 +4,7 @@ class TodoApi
 {
   static store(data)
   {
-    return axios.post(route('todo.store'), data)
+    return axios.post( route('todo.store'), data )
       .then(response => response)
       .catch(error => {
         console.error('Error adding todo:');
@@ -18,6 +18,16 @@ class TodoApi
       .then(response => response)
       .catch(error => {
         console.error('Error deleting todo:');
+        return false
+      });
+  }
+
+  static update(data)
+  {
+    return axios.put( route('todo.update', {todo: data.id}), data )
+      .then(response => response)
+      .catch(error => {
+        console.error('Error updating todo:');
         return false
       });
   }

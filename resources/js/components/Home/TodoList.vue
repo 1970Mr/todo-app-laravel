@@ -88,7 +88,7 @@
   <ConfirmModal
     v-if="selectedTodoItem"
     :message="'Are you sure you want to delete this todo item?'"
-    @confirm="deleteTodoItem"
+    @confirm="onDelete"
     @close-delete-modal="closeDeleteModal"/>
 </template>
 
@@ -124,7 +124,7 @@ function closeDeleteModal() {
   selectedTodoItem.value = null
 }
 
-async function deleteTodoItem() {
+async function onDelete() {
   const response = await TodoApi.destroy(selectedTodoItem.value.id)
   if (!response?.status) return
   todoList.value = todoList.value.filter(
@@ -133,9 +133,11 @@ async function deleteTodoItem() {
   closeDeleteModal()
 }
 
-function onUpdate(todoItem) {
-  todoItem.inEdit = false
+async function onUpdate(todoItem) {
   todoItem.text = todoItem.text.trim()
+  const response = await TodoApi.update(todoItem)
+  if (!response?.status) return
+  todoItem.inEdit = false
 }
 
 function onEdit(todoItem) {

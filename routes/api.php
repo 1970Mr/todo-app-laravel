@@ -14,5 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('todo', [TodoController::class, 'store'])->name('todo.store');
-Route::delete('todo/{todo}', [TodoController::class, 'destroy'])->name('todo.destroy');
+Route::prefix('todo')->controller(TodoController::class)->group(function () {
+  Route::post('/', 'store')->name('todo.store');
+  Route::put('{todo}', 'update')->name('todo.update');
+  Route::delete('{todo}', 'destroy')->name('todo.destroy');
+});
