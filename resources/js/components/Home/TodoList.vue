@@ -28,7 +28,7 @@
         :key="index"
         :id="todoItem.id"
         ref="itemRefs"
-        @dblclick="todoItem.completed = !todoItem.completed"
+        @dblclick="changeStatus(todoItem)"
       >
         <div class="flex items-center justify-between" v-if="todoItem.inEdit">
           <input
@@ -73,7 +73,7 @@
             <button
               class="text-green-500 hover:text-green-700"
               title="completed"
-              @click="todoItem.completed = !todoItem.completed"
+              @click="changeStatus(todoItem)"
             >
               <i class="bx bx-check completed-icon" v-if="!todoItem.completed"></i>
               <i class="bx bx-check-double completed-icon" v-if="todoItem.completed"></i>
@@ -168,6 +168,11 @@ function filteredTodo() {
 function searchTodo() {
   const searchRegex = new RegExp(searchItem.value, 'i');
   return searchItem.value !== '' ? todoList.value.filter(item => searchRegex.test(item.text)) : todoList.value
+}
+
+async function changeStatus(todoItem) {
+  todoItem.completed = !todoItem.completed
+  await TodoApi.update(todoItem)
 }
 </script>
 
