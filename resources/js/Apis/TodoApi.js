@@ -4,8 +4,9 @@ import {usePage} from "@inertiajs/vue3";
 
 class TodoApi {
   addUserIdToRequest(data) {
+    const token = usePage().props?.auth?.token
     const userId = usePage().props?.auth?.user?.id;
-    return { ...data, userId };
+    return { ...data, userId, token };
   }
 
   async get() {
