@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import TodoList from '@/components/Home/TodoList.vue';
+import TodoList from '@/Components/Home/TodoList.vue';
 
 defineProps([
     'todoList'

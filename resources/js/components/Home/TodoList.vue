@@ -4,6 +4,22 @@
   >
     <h1 class="text-2xl font-bold mb-4 text-center text-white">Todo List</h1>
 
+    <div class="flex mb-4">
+      <a :href="route('login')" class="text-gray-300 hover:text-gray-700 mr-5 flex items-center">
+        <i class="bx bx-log-in mr-1"></i>
+        <span>Login</span>
+      </a>
+      <a :href="route('todo.index')" class="text-gray-300 hover:text-gray-700 flex items-center">
+        <i class="bx bx-user-plus text-[1.18rem] mr-1"></i>
+        <span>Register</span>
+      </a>
+
+<!--      <a :href="route('todo.index')" class="text-gray-300 hover:text-gray-700 flex items-center">-->
+<!--        <i class="bx bx-log-out mr-1"></i>-->
+<!--        <span>Logout</span>-->
+<!--      </a>-->
+    </div>
+
     <div class="flex items-center justify-between mb-4">
       <div class="relative">
         <i class="bx bx-search text-xl text-gray-300 absolute left-1 top-[.43rem]"></i>
@@ -93,11 +109,12 @@
 </template>
 
 <script setup>
-import AddTodo from "@/components/Home/AddTodo.vue"
-import ConfirmModal from "@/components/ConfirmModal.vue"
-import FilterTodo from "@/components/Home/FilterTodo.vue"
+import AddTodo from "@/Components/Home/AddTodo.vue"
+import ConfirmModal from "@/Components/ConfirmModal.vue"
+import FilterTodo from "@/Components/Home/FilterTodo.vue"
 import {onMounted, ref} from "vue"
 import TodoApi from "@/Apis/TodoApi.js";
+import route from 'ziggy-js'
 
 const props = defineProps([
   'todoList'
