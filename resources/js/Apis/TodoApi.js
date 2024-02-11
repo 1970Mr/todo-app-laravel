@@ -1,7 +1,7 @@
 import route from 'ziggy-js';
 
 class TodoApi {
-  static async get() {
+  async get() {
     try {
       const response = await axios.get(route('todo.get'));
       return response.data;
@@ -11,7 +11,7 @@ class TodoApi {
     }
   }
 
-  static async store(data) {
+  async store(data) {
     try {
       const response = await axios.post(route('todo.store'), data);
       return response.data;
@@ -21,7 +21,7 @@ class TodoApi {
     }
   }
 
-  static async destroy(id) {
+  async destroy(id) {
     try {
       await axios.delete(route('todo.destroy', { todo: id }));
       return true;
@@ -31,7 +31,7 @@ class TodoApi {
     }
   }
 
-  static async update(data) {
+  async update(data) {
     try {
       const response = await axios.put(route('todo.update', { todo: data.id }), data);
       return response.data;

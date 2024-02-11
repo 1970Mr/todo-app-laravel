@@ -3,8 +3,9 @@ import AddTodo from "@/Components/Home/AddTodo.vue"
 import DeleteModal from "@/Components/DeleteModal.vue";
 import FilterTodo from "@/Components/Home/FilterTodo.vue"
 import {onMounted, ref} from "vue"
-import TodoApi from "@/Apis/TodoApi.js";
 import route from 'ziggy-js'
+import TodoProvider from '@/Helpers/TodoProvider'
+import {usePage} from "@inertiajs/vue3";
 
 const todos = ref([])
 const itemRefs = ref(null)
@@ -12,9 +13,12 @@ const selectedTodoItem = ref(null)
 const filterOption = ref('all')
 const searchItem = ref('')
 const csrfToken = ref('')
+const todoProvider = ref('')
 
 onMounted(async () => {
-  todos.value = await TodoApi.get()
+  const user = usePage().props?.auth?.user
+  todoProvider.value = TodoProvider.createTodoProvider(user)
+  todos.value = await todoProvider.value.get()
   csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 })
 
@@ -31,7 +35,7 @@ function closeDeleteModal() {
 }
 
 async function onDelete() {
-  const response = await TodoApi.destroy(selectedTodoItem.value.id)
+  const response = await todoProvider.value.destroy(selectedTodoItem.value.id)
   if (!response) return
   todos.value = todos.value.filter(
     (item) => item.id !== selectedTodoItem.value.id
@@ -41,7 +45,7 @@ async function onDelete() {
 
 async function onUpdate(todoItem) {
   todoItem.text = todoItem.text.trim()
-  const response = await TodoApi.update(todoItem)
+  const response = await todoProvider.value.update(todoItem)
   if (!response) return
   todoItem.inEdit = false
 }
@@ -78,7 +82,7 @@ function searchTodo() {
 
 async function changeStatus(todoItem) {
   todoItem.completed = !todoItem.completed
-  await TodoApi.update(todoItem)
+  await todoProvider.value.update(todoItem)
 }
 </script>
 
