@@ -1,29 +1,25 @@
 <script setup>
 import AddTodo from "@/Components/Home/AddTodo.vue"
-import ConfirmModal from "@/Components/ConfirmModal.vue"
+import DeleteModal from "@/Components/DeleteModal.vue";
 import FilterTodo from "@/Components/Home/FilterTodo.vue"
 import {onMounted, ref} from "vue"
 import TodoApi from "@/Apis/TodoApi.js";
 import route from 'ziggy-js'
-import BaseLayout from "@/Layouts/BaseLayout.vue";
 
-const props = defineProps([
-  'todoList'
-])
-const todoList = ref([])
+const todos = ref([])
 const itemRefs = ref(null)
 const selectedTodoItem = ref(null)
 const filterOption = ref('all')
 const searchItem = ref('')
 const csrfToken = ref('')
 
-onMounted(() => {
-  todoList.value = props.todoList
+onMounted(async () => {
+  todos.value = await TodoApi.get()
   csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 })
 
 function addTodo(data) {
-  todoList.value.unshift(data)
+  todos.value.unshift(data)
 }
 
 function openDeleteModal(todoItem) {
@@ -36,8 +32,8 @@ function closeDeleteModal() {
 
 async function onDelete() {
   const response = await TodoApi.destroy(selectedTodoItem.value.id)
-  if (!response?.status) return
-  todoList.value = todoList.value.filter(
+  if (!response) return
+  todos.value = todos.value.filter(
     (item) => item.id !== selectedTodoItem.value.id
   )
   closeDeleteModal()
@@ -46,7 +42,7 @@ async function onDelete() {
 async function onUpdate(todoItem) {
   todoItem.text = todoItem.text.trim()
   const response = await TodoApi.update(todoItem)
-  if (!response?.status) return
+  if (!response) return
   todoItem.inEdit = false
 }
 
@@ -77,7 +73,7 @@ function filteredTodo() {
 
 function searchTodo() {
   const searchRegex = new RegExp(searchItem.value, 'i');
-  return searchItem.value !== '' ? todoList.value.filter(item => searchRegex.test(item.text)) : todoList.value
+  return searchItem.value !== '' ? todos.value.filter(item => searchRegex.test(item.text)) : todos.value
 }
 
 async function changeStatus(todoItem) {
@@ -87,7 +83,6 @@ async function changeStatus(todoItem) {
 </script>
 
 <template>
-  <BaseLayout title="Todo List">
     <!--  Login and Register  -->
     <div class="flex mb-4" v-if="!$page.props?.auth?.user">
       <a :href="route('login')" class="text-white hover:text-gray-200 mr-5 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
@@ -190,14 +185,13 @@ async function changeStatus(todoItem) {
         </div>
       </div>
     </div>
-  </BaseLayout>
 
-  <!-- Modal for delete confirmation -->
-  <ConfirmModal
+  <DeleteModal
     v-if="selectedTodoItem"
     :message="'Are you sure you want to delete this todo item?'"
     @confirm="onDelete"
     @close-delete-modal="closeDeleteModal"/>
+
 </template>
 
 <style scoped>
