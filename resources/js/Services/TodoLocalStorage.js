@@ -1,30 +1,29 @@
 class TodoLocalStorage {
-  static getTodos() {
+  static get() {
     const todos = localStorage.getItem('todos');
-    const data = todos ? JSON.parse(todos) : [];
-    return { data, status: 200}
+    return Promise.resolve(JSON.parse(todos));
   }
 
   static store(data) {
-    const todos = this.getTodos();
+    const todos = this.get();
     const newTodo = { ...data, id: this._generateUniqueId() };
     todos.unshift(newTodo);
     localStorage.setItem('todos', JSON.stringify(todos));
-    return Promise.resolve({ data: newTodo, status: 201 });
+    return Promise.resolve(newTodo);
   }
 
   static destroy(id) {
-    const todos = this.getTodos();
+    const todos = this.get();
     const updatedTodos = todos.filter(todo => todo.id !== id);
     localStorage.setItem('todos', JSON.stringify(updatedTodos));
-    return Promise.resolve({ status: 204 });
+    return Promise.resolve(true);
   }
 
   static update(data) {
-    const todos = this.getTodos();
+    const todos = this.get();
     const updatedTodos = todos.map(todo => (todo.id === data.id ? data : todo));
     localStorage.setItem('todos', JSON.stringify(updatedTodos));
-    return Promise.resolve({ data, status: 200 });
+    return Promise.resolve(data);
   }
 
   _generateUniqueId() {

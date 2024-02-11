@@ -11,8 +11,7 @@ class TodoController extends Controller
 {
   public function index()
   {
-    $todoList = Todo::orderBy('created_at', 'desc')->get();
-    return Inertia::render('HomePage', compact('todoList'));
+    return Inertia::render('HomePage');
   }
 
   public function store(Request $request)
@@ -40,5 +39,11 @@ class TodoController extends Controller
     } catch (\Exception $e) {
       return response()->json(['errors' => $e->getMessage()], 422);
     }
+  }
+
+  public function get()
+  {
+    $todos = Todo::orderBy('created_at', 'desc')->get();
+    return response()->json($todos, 200);
   }
 }

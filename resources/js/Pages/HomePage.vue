@@ -7,5 +7,5 @@ defineProps([
 </script>
 
 <template>
-  <TodoList :todoList="todoList" />
+  <TodoList />
 </template>
