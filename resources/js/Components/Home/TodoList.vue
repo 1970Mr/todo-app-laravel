@@ -141,6 +141,7 @@ async function changeStatus(todoItem) {
           <input
             class="bg-white rounded-l-lg px-4 py-2 w-full focus:outline-none"
             v-model="todoItem.text"
+            @keydown.enter.prevent="onUpdate(todoItem)"
           >
           <button
             class="text-green-600 bg-white bg-opacity-50 p-2 hover:text-green-500"

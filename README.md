@@ -14,6 +14,9 @@ This project is a simple Todo application built using Laravel, Vue.js, and Tailw
 - **Mark Todo as Completed:** Users can mark todo items as completed by clicking on the checkbox next to each item.
 - **Filter Todos:** Users can filter todo items based on their completion status (All, Active, Completed).
 - **Search Todos:** Users can search for specific todo items by typing in the search input field.
+- **Register:** Users can register for an account to access the todo application.
+- **Login:** Registered users can log in to their accounts to manage their todo lists.
+- **Forget Password:** Users can request a password reset if they forget their password.
 
 ### Technologies Used
 
@@ -57,6 +60,12 @@ To run this project locally, follow these steps:
    ```
 
 6. Open your browser and visit `http://localhost:8000` to view the application.
+
+### Authentication and Local Storage
+
+- This application utilizes both database storage and local storage based on the user's authentication status.
+- When a user is logged in, todo items are stored in the database to ensure data persistence and security.
+- If a user is not logged in, todo items are stored in the local storage of the browser, providing a seamless experience without the need for authentication.
 
 ### Contributing
 

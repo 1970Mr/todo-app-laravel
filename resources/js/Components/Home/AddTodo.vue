@@ -28,7 +28,7 @@ async function addTodo() {
   <!-- Add todo item -->
   <div class="flex mb-4">
     <input
-      @keydown.enter="addTodo"
+      @keydown.enter.prevent="addTodo"
       v-model="newTodo"
       type="text"
       placeholder="Add a new todo item"
