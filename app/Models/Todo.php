@@ -26,4 +26,9 @@ class Todo extends Model
       set: static fn(string $value) => (int)$value,
     );
   }
+
+  public function user()
+  {
+    return $this->belongsTo(User::class);
+  }
 }
