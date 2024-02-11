@@ -1,25 +1,117 @@
-<template>
-  <div
-    class="max-w-md w-full p-6 bg-white bg-opacity-20 backdrop-blur-md rounded-lg"
-  >
-    <h1 class="text-2xl font-bold mb-4 text-center text-white">Todo List</h1>
+<script setup>
+import AddTodo from "@/Components/Home/AddTodo.vue"
+import ConfirmModal from "@/Components/ConfirmModal.vue"
+import FilterTodo from "@/Components/Home/FilterTodo.vue"
+import {onMounted, ref} from "vue"
+import TodoApi from "@/Apis/TodoApi.js";
+import route from 'ziggy-js'
+import BaseLayout from "@/Layouts/BaseLayout.vue";
 
-    <div class="flex mb-4">
-      <a :href="route('login')" class="text-gray-300 hover:text-gray-700 mr-5 flex items-center">
+const props = defineProps([
+  'todoList'
+])
+const todoList = ref([])
+const itemRefs = ref(null)
+const selectedTodoItem = ref(null)
+const filterOption = ref('all')
+const searchItem = ref('')
+const csrfToken = ref('')
+
+onMounted(() => {
+  todoList.value = props.todoList
+  csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+})
+
+function addTodo(data) {
+  todoList.value.unshift(data)
+}
+
+function openDeleteModal(todoItem) {
+  selectedTodoItem.value = todoItem
+}
+
+function closeDeleteModal() {
+  selectedTodoItem.value = null
+}
+
+async function onDelete() {
+  const response = await TodoApi.destroy(selectedTodoItem.value.id)
+  if (!response?.status) return
+  todoList.value = todoList.value.filter(
+    (item) => item.id !== selectedTodoItem.value.id
+  )
+  closeDeleteModal()
+}
+
+async function onUpdate(todoItem) {
+  todoItem.text = todoItem.text.trim()
+  const response = await TodoApi.update(todoItem)
+  if (!response?.status) return
+  todoItem.inEdit = false
+}
+
+function onEdit(todoItem) {
+  todoItem.inEdit = true
+  todoItem.fomerText = todoItem.text
+}
+
+function onCancel(todoItem) {
+  todoItem.inEdit = false
+  todoItem.text = todoItem.fomerText
+}
+
+function doFilter(filter) {
+  filterOption.value = filter
+}
+
+function filteredTodo() {
+  const searchedTodo = searchTodo()
+
+  if (filterOption.value === 'all')
+    return searchedTodo
+  if (filterOption.value === 'active')
+    return searchedTodo.filter(item => !item.completed)
+  if (filterOption.value === 'completed')
+    return searchedTodo.filter(item => item.completed)
+}
+
+function searchTodo() {
+  const searchRegex = new RegExp(searchItem.value, 'i');
+  return searchItem.value !== '' ? todoList.value.filter(item => searchRegex.test(item.text)) : todoList.value
+}
+
+async function changeStatus(todoItem) {
+  todoItem.completed = !todoItem.completed
+  await TodoApi.update(todoItem)
+}
+</script>
+
+<template>
+  <BaseLayout title="Todo List">
+    <!--  Login and Register  -->
+    <div class="flex mb-4" v-if="!$page.props?.auth?.user">
+      <a :href="route('login')" class="text-white hover:text-gray-200 mr-5 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
         <i class="bx bx-log-in mr-1"></i>
         <span>Login</span>
       </a>
-      <a :href="route('todo.index')" class="text-gray-300 hover:text-gray-700 flex items-center">
-        <i class="bx bx-user-plus text-[1.18rem] mr-1"></i>
+      <a :href="route('register')" class="text-white hover:text-gray-200 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
+      <i class="bx bx-user-plus text-[1.18rem] mr-1"></i>
         <span>Register</span>
       </a>
-
-<!--      <a :href="route('todo.index')" class="text-gray-300 hover:text-gray-700 flex items-center">-->
-<!--        <i class="bx bx-log-out mr-1"></i>-->
-<!--        <span>Logout</span>-->
-<!--      </a>-->
     </div>
 
+    <!--  Logout  -->
+    <div class="flex mb-4" v-if="$page.props?.auth?.user">
+      <form ref="logoutForm" :action="route('logout')" method="POST">
+        <button type="submit" class="text-white hover:text-gray-200 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
+          <i class="bx bx-log-out mr-1"></i>
+          <span>Logout</span>
+        </button>
+        <input type="hidden" name="_token" :value="csrfToken">
+      </form>
+    </div>
+
+    <!--  Search  -->
     <div class="flex items-center justify-between mb-4">
       <div class="relative">
         <i class="bx bx-search text-xl text-gray-300 absolute left-1 top-[.43rem]"></i>
@@ -27,7 +119,7 @@
           v-model="searchItem"
           type="text"
           placeholder="Search items..."
-          class="flex-1 rounded-lg pr-2 pl-6 py-1 focus:outline-none focus:ring-2 ring-inset focus:ring-blue-500"
+          class="flex-1 rounded-lg pr-2 pl-6 py-1 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
         />
       </div>
 
@@ -98,7 +190,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </BaseLayout>
 
   <!-- Modal for delete confirmation -->
   <ConfirmModal
@@ -107,91 +199,6 @@
     @confirm="onDelete"
     @close-delete-modal="closeDeleteModal"/>
 </template>
-
-<script setup>
-import AddTodo from "@/Components/Home/AddTodo.vue"
-import ConfirmModal from "@/Components/ConfirmModal.vue"
-import FilterTodo from "@/Components/Home/FilterTodo.vue"
-import {onMounted, ref} from "vue"
-import TodoApi from "@/Apis/TodoApi.js";
-import route from 'ziggy-js'
-
-const props = defineProps([
-  'todoList'
-])
-const todoList = ref([])
-const itemRefs = ref(null)
-const selectedTodoItem = ref(null)
-const filterOption = ref('all')
-const searchItem = ref('')
-
-onMounted(() => {
-  todoList.value = props.todoList
-})
-
-function addTodo(data) {
-  todoList.value.unshift(data)
-}
-
-function openDeleteModal(todoItem) {
-  selectedTodoItem.value = todoItem
-}
-
-function closeDeleteModal() {
-  selectedTodoItem.value = null
-}
-
-async function onDelete() {
-  const response = await TodoApi.destroy(selectedTodoItem.value.id)
-  if (!response?.status) return
-  todoList.value = todoList.value.filter(
-    (item) => item.id !== selectedTodoItem.value.id
-  )
-  closeDeleteModal()
-}
-
-async function onUpdate(todoItem) {
-  todoItem.text = todoItem.text.trim()
-  const response = await TodoApi.update(todoItem)
-  if (!response?.status) return
-  todoItem.inEdit = false
-}
-
-function onEdit(todoItem) {
-  todoItem.inEdit = true
-  todoItem.fomerText = todoItem.text
-}
-
-function onCancel(todoItem) {
-  todoItem.inEdit = false
-  todoItem.text = todoItem.fomerText
-}
-
-function doFilter(filter) {
-  filterOption.value = filter
-}
-
-function filteredTodo() {
-  const searchedTodo = searchTodo()
-
-  if (filterOption.value === 'all')
-    return searchedTodo
-  if (filterOption.value === 'active')
-    return searchedTodo.filter(item => !item.completed)
-  if (filterOption.value === 'completed')
-    return searchedTodo.filter(item => item.completed)
-}
-
-function searchTodo() {
-  const searchRegex = new RegExp(searchItem.value, 'i');
-  return searchItem.value !== '' ? todoList.value.filter(item => searchRegex.test(item.text)) : todoList.value
-}
-
-async function changeStatus(todoItem) {
-  todoItem.completed = !todoItem.completed
-  await TodoApi.update(todoItem)
-}
-</script>
 
 <style scoped>
 .completed-icon {

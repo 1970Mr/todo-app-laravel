@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps(['title'])
+defineProps(['title'])
 
 </script>
 
@@ -7,7 +7,7 @@ const props = defineProps(['title'])
   <div
     class="max-w-md w-full p-6 bg-white bg-opacity-20 backdrop-blur-md rounded-lg"
   >
-    <h1 class="text-2xl font-bold mb-4 text-center text-white" v-if="$page.props?.title">{{ props.title }}</h1>
+    <h1 class="text-2xl font-bold mb-4 text-center text-white" v-if="title">{{ title }}</h1>
     <slot/>
   </div>
 </template>

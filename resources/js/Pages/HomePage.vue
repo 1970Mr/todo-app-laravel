@@ -1,15 +1,11 @@
-<template>
-  <TodoList :todoList="todoList" />
-</template>
-
 <script setup>
 import TodoList from '@/Components/Home/TodoList.vue';
 
 defineProps([
-    'todoList'
+  'todoList'
 ])
 </script>
 
-<style>
-
-</style>
+<template>
+  <TodoList :todoList="todoList" />
+</template>
