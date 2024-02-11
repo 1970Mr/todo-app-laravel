@@ -1,11 +1,10 @@
 <script setup>
 import TodoList from '@/Components/Home/TodoList.vue';
-
-defineProps([
-  'todoList'
-])
+import BaseLayout from "@/Layouts/BaseLayout.vue";
 </script>
 
 <template>
-  <TodoList />
+  <BaseLayout title="Todo App">
+    <TodoList/>
+  </BaseLayout>
 </template>
