@@ -19,7 +19,7 @@ onMounted(async () => {
   const user = usePage().props?.auth?.user
   todoProvider.value = TodoProvider.createTodoProvider(user)
   todos.value = await todoProvider.value.get()
-  csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  csrfToken.value = usePage().props?.csrf_token;
 })
 
 function addTodo(data) {
@@ -101,12 +101,15 @@ async function changeStatus(todoItem) {
 
     <!--  Logout  -->
     <div class="flex mb-4" v-if="$page.props?.auth?.user">
-      <form ref="logoutForm" :action="route('logout')" method="POST">
+      <form :action="route('logout')" method="POST">
         <button type="submit" class="text-white hover:text-gray-200 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
           <i class="bx bx-log-out mr-1"></i>
           <span>Logout</span>
         </button>
         <input type="hidden" name="_token" :value="csrfToken">
+        <div v-if="$page.props.flash.expired_message" class="text-red-900 mt-1 mb-2 text-sm">
+          {{ $page.props.flash.expired_message }}
+        </div>
       </form>
     </div>
 

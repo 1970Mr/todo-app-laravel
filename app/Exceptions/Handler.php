@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Session\TokenMismatchException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -27,4 +28,17 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+  public function render($request, Throwable $exception)
+  {
+    $response = parent::render($request, $exception);
+
+    if ($response->status() === 419) {
+      return back()->with([
+        'expired_message' => 'The page expired, please try again.',
+      ]);
+    }
+
+    return $response;
+  }
 }
