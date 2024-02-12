@@ -29,18 +29,10 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-      $token = null;
-      if (auth()->hasUser())
-      {
-        auth()->user()->tokens()->delete();
-        $token = auth()->user()->createToken('Personal Access Token')->plainTextToken;
-      }
-
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
-                'token' => $token,
             ],
         ];
     }

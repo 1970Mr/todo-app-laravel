@@ -1,8 +1,5 @@
 <?php
 
-use App\Http\Controllers\TodoController;
-use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,9 +11,3 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('todo')->controller(TodoController::class)->group(function () {
-  Route::get('/', 'get')->name('todo.get');
-  Route::post('/', 'store')->name('todo.store');
-  Route::put('{todo}', 'update')->name('todo.update');
-  Route::delete('{todo}', 'destroy')->name('todo.destroy');
-});
