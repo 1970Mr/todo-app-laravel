@@ -107,7 +107,7 @@ async function changeStatus(todoItem) {
           <span>Logout</span>
         </button>
         <input type="hidden" name="_token" :value="csrfToken">
-        <div v-if="$page.props.flash.expired_message" class="text-red-900 mt-1 mb-2 text-sm">
+        <div v-if="$page.props?.flash?.expired_message" class="text-red-900 mt-1 mb-2 text-sm">
           {{ $page.props.flash.expired_message }}
         </div>
       </form>

@@ -1,6 +1,6 @@
 ## Todo App with Laravel, Vue.js, and Tailwind CSS
 
-This project is a simple Todo application built using Laravel, Vue.js, and Tailwind CSS.
+This project is a Todo application built using Laravel, Vue.js, and Tailwind CSS.
 
 ### Screenshot
 
