@@ -2,9 +2,13 @@
 
 This project is a Todo application built using Laravel, Vue.js, and Tailwind CSS.
 
-### Screenshot
+### Screenshots
 
 ![Todo App Screenshot](/docs/screenshots/todo-app-screenshot3.png)
+
+![Todo App Screenshot](/docs/screenshots/todo-app-screenshot6.png)
+
+![Todo App Screenshot](/docs/screenshots/todo-app-screenshot7.png)
 
 ### Features
 
@@ -17,6 +21,7 @@ This project is a Todo application built using Laravel, Vue.js, and Tailwind CSS
 - **Register:** Users can register for an account to access the todo application.
 - **Login:** Registered users can log in to their accounts to manage their todo lists.
 - **Forget Password:** Users can request a password reset if they forget their password.
+- **Pagination:** Todo items are paginated to improve user experience and performance.
 
 ### Technologies Used
 
@@ -47,19 +52,48 @@ To run this project locally, follow these steps:
    npm install
    ```
 
-4. Compile assets:
+4. Copy the `.env.example` file and create a new `.env` file:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+5. Generate an application key:
+
+   ```bash
+   php artisan key:generate
+   ```
+
+6. Configure the database connection in the `.env` file:
+
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=your_database_name
+   DB_USERNAME=your_database_username
+   DB_PASSWORD=your_database_password
+   ```
+
+7. Run database migrations:
+
+   ```bash
+   php artisan migrate
+   ```
+
+8. Compile assets:
 
    ```bash
    npm run dev
    ```
 
-5. Start the development server:
+9. Start the development server:
 
    ```bash
    php artisan serve
    ```
 
-6. Open your browser and visit `http://localhost:8000` to view the application.
+10. Open your browser and visit `http://localhost:8000` to view the application.
 
 ### Authentication and Local Storage
 
