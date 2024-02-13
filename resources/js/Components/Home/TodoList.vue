@@ -16,15 +16,16 @@ const csrfToken = ref('')
 const todoProvider = ref('')
 const todosInfo = ref('')
 const currentPage = ref(1)
+const user = ref({})
 
 onMounted( () => {
-  fetchTodos()
+  user.value = usePage().props?.auth?.user
   csrfToken.value = usePage().props?.csrf_token;
+  fetchTodos()
 })
 
-async function fetchTodos(page = 1) {
-  const user = usePage().props?.auth?.user
-  todoProvider.value = TodoProvider.createTodoProvider(user)
+async function fetchTodos(page) {
+  todoProvider.value = TodoProvider.createTodoProvider(user.value)
   todosInfo.value = await todoProvider.value.get(page)
   todos.value = todosInfo.value.data
   currentPage.value = todosInfo.value.current_page
@@ -34,7 +35,8 @@ const paginateHandler = (page) => {
 };
 
 function addTodo(data) {
-  todos.value.unshift(data)
+  // todos.value.unshift(data)
+  fetchTodos(currentPage.value)
 }
 
 function openDeleteModal(todoItem) {
@@ -52,6 +54,7 @@ async function onDelete() {
     (item) => item.id !== selectedTodoItem.value.id
   )
   closeDeleteModal()
+  fetchTodos(currentPage.value)
 }
 
 async function onUpdate(todoItem) {
@@ -76,7 +79,6 @@ function doFilter(filter) {
 }
 
 function filteredTodo() {
-  fetchTodos(currentPage.value)
   const searchedTodo = searchTodo()
 
   if (filterOption.value === 'all')
@@ -100,7 +102,7 @@ async function changeStatus(todoItem) {
 
 <template>
     <!--  Login and Register  -->
-    <div class="flex mb-4" v-if="!$page.props?.auth?.user">
+    <div class="flex mb-4" v-if="!user">
       <a :href="route('login')" class="text-white hover:text-gray-200 mr-5 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
         <i class="bx bx-log-in mr-1"></i>
         <span>Login</span>
@@ -112,7 +114,7 @@ async function changeStatus(todoItem) {
     </div>
 
     <!--  Logout  -->
-    <div class="flex mb-4" v-if="$page.props?.auth?.user">
+    <div class="flex mb-4" v-if="user">
       <form :action="route('logout')" method="POST">
         <button type="submit" class="text-white hover:text-gray-200 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
           <i class="bx bx-log-out mr-1"></i>
@@ -206,7 +208,7 @@ async function changeStatus(todoItem) {
       </div>
     </div>
 
-  <div class="flex justify-center mt-5">
+  <div class="flex justify-center mt-5" v-if="todosInfo.total > todosInfo.per_page">
     <vue-awesome-paginate
       :total-items="todosInfo.total"
       :items-per-page="todosInfo.per_page"

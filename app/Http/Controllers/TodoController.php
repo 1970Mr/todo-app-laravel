@@ -45,9 +45,9 @@ class TodoController extends Controller
     }
   }
 
-  public function get()
+  public function get(Request $request)
   {
-    $todos = auth()->user()->todos()->orderBy('created_at', 'desc')->paginate(5);
+    $todos = auth()->user()->todos()->orderBy('created_at', 'desc')->paginate($request->perPage);
     return response()->json($todos, 200);
   }
 
