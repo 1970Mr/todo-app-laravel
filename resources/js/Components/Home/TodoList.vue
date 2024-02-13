@@ -14,13 +14,24 @@ const filterOption = ref('all')
 const searchItem = ref('')
 const csrfToken = ref('')
 const todoProvider = ref('')
+const todosInfo = ref('')
+const currentPage = ref(1)
 
-onMounted(async () => {
-  const user = usePage().props?.auth?.user
-  todoProvider.value = TodoProvider.createTodoProvider(user)
-  todos.value = await todoProvider.value.get()
+onMounted( () => {
+  fetchTodos()
   csrfToken.value = usePage().props?.csrf_token;
 })
+
+async function fetchTodos(page = 1) {
+  const user = usePage().props?.auth?.user
+  todoProvider.value = TodoProvider.createTodoProvider(user)
+  todosInfo.value = await todoProvider.value.get(page)
+  todos.value = todosInfo.value.data
+  currentPage.value = todosInfo.value.current_page
+}
+const paginateHandler = (page) => {
+  fetchTodos(page)
+};
 
 function addTodo(data) {
   todos.value.unshift(data)
@@ -65,6 +76,7 @@ function doFilter(filter) {
 }
 
 function filteredTodo() {
+  fetchTodos(currentPage.value)
   const searchedTodo = searchTodo()
 
   if (filterOption.value === 'all')
@@ -194,6 +206,24 @@ async function changeStatus(todoItem) {
       </div>
     </div>
 
+  <div class="flex justify-center mt-5">
+    <vue-awesome-paginate
+      :total-items="todosInfo.total"
+      :items-per-page="todosInfo.per_page"
+      :max-pages-shown="3"
+      v-model="currentPage"
+      :on-click="paginateHandler"
+    >
+      <template #prev-button>
+        <i class="bx bx-chevron-left text-[1.3rem] font-bold"></i>
+      </template>
+
+      <template #next-button>
+        <i class="bx bx-chevron-right text-[1.3rem] font-bold"></i>
+      </template>
+    </vue-awesome-paginate>
+  </div>
+
   <DeleteModal
     v-if="selectedTodoItem"
     :message="'Are you sure you want to delete this todo item?'"
@@ -202,8 +232,46 @@ async function changeStatus(todoItem) {
 
 </template>
 
-<style scoped>
+<style>
 .completed-icon {
   margin-right: -0.5rem;
+}
+
+.pagination-container {
+  border-radius: 22px;
+  overflow: hidden;
+}
+.paginate-buttons {
+  width: 33px;
+  height: 33px;
+  cursor: pointer;
+  border: none;
+  border-inline: 1px solid theme('colors.indigo.400')
+}
+.paginate-buttons {
+  @apply bg-indigo-600 text-white flex items-center justify-center
+}
+.active-page {
+  @apply bg-indigo-400 text-white
+}
+.paginate-buttons:hover {
+  @apply bg-indigo-800
+}
+.active-page:hover {
+  @apply bg-indigo-400
+}
+.back-button {
+  border-inline-start: none;
+}
+.next-button {
+  border-inline-end: none;
+}
+.back-button svg {
+  transform: rotate(180deg);
+}
+
+.back-button:active,
+.next-button:active {
+  @apply bg-indigo-800
 }
 </style>

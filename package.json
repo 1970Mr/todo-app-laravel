@@ -21,6 +21,7 @@
         "@inertiajs/vue3": "^1.0.14",
         "@vitejs/plugin-vue": "^5.0.3",
         "boxicons": "^2.1.4",
-        "vue": "^3.4.18"
+        "vue": "^3.4.18",
+        "vue-awesome-paginate": "^1.1.46"
     }
 }

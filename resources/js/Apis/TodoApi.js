@@ -1,9 +1,9 @@
 import route from 'ziggy-js';
 
 class TodoApi {
-  async get() {
+  async get(page) {
     try {
-      const response = await axios.get(route('todo.get'));
+      const response = await axios.get(route('todo.get'), {params: {page: page}});
       return response.data;
     } catch (error) {
       console.error('Error getting todos:', error);
