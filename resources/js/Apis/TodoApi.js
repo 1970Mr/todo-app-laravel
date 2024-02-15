@@ -40,6 +40,22 @@ class TodoApi {
       return false
     }
   }
+
+  async changeOrder(todo, todos) {
+    try {
+      const index = todos.findIndex((item) => item.id === todo['id'])
+      const previousItem = todos[index - 1];
+      const oneBeforeLast = todos[1];
+      let newOrder = (previousItem) ? previousItem.order : oneBeforeLast.order + 1
+      newOrder = todo.order === newOrder ? newOrder - 1 : newOrder
+      todo.order = newOrder
+      await axios.put(route('todo.order', {todo}), {newOrder})
+      return newOrder;
+    } catch (error) {
+      console.error('Error changing todos order:', error);
+      return false
+    }
+  }
 }
 
 export default TodoApi;

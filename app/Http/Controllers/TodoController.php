@@ -20,6 +20,9 @@ class TodoController extends Controller
     $validator = Validator::make($request->all(), ['text' => 'required|string|max:255',]);
     if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
     $todo = auth()->user()->todos()->create($request->all());
+    $lastOrder = auth()->user()->todos()->orderBy('order', 'desc')->first()->order;
+    $todo->order = $lastOrder + 1;
+    $todo->save();
     return response()->json($todo, 201);
   }
 
@@ -56,7 +59,7 @@ class TodoController extends Controller
       $search = $request->filteredData['search'];
       $todos->where('text', 'LIKE', "%$search%");
     }
-    $todos = $todos->orderBy('created_at', 'desc')->paginate($request->perPage);
+    $todos = $todos->orderBy('order', 'desc')->paginate($request->perPage);
     return response()->json($todos, 200);
   }
 
@@ -74,5 +77,12 @@ class TodoController extends Controller
     } else {
       return  [0, 1];
     }
+  }
+
+  public function updateOrder(Request $request, Todo $todo)
+  {
+    $todo->update(['order' => $request->newOrder]);
+    auth()->user()->todos()->where('order', '>=', $todo->order)->whereNot('id', $todo->id)->increment('order');
+    return response()->json(['message' => 'Changes saved successfully'], 200);
   }
 }

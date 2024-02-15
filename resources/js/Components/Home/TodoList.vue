@@ -2,13 +2,13 @@
 import AddTodo from "@/Components/Home/AddTodo.vue"
 import DeleteModal from "@/Components/DeleteModal.vue";
 import FilterTodo from "@/Components/Home/FilterTodo.vue"
-import {onBeforeMount, onBeforeUnmount, ref, watch} from "vue"
+import {ref, watch} from "vue"
 import route from 'ziggy-js'
 import TodoProvider from '@/Helpers/TodoProvider'
 import {usePage} from "@inertiajs/vue3";
+import draggable from 'vuedraggable'
 
 const todos = ref([])
-const itemRefs = ref(null)
 const selectedTodoItem = ref(null)
 const filterOption = ref('all')
 const searchItem = ref('')
@@ -25,19 +25,24 @@ csrfToken.value = usePage().props?.csrf_token;
 todoProvider.value = TodoProvider.createTodoProvider(user.value?.id)
 
 watch([currentPage, filteredData, runFetch], async () => {
-  todosInfo.value = await todoProvider.value.get(filteredData.value, currentPage.value)
-  todos.value = todosInfo.value.data
-},
-  { immediate: true }
+    todosInfo.value = await todoProvider.value.get(filteredData.value, currentPage.value)
+    todos.value = todosInfo.value.data
+  },
+  {immediate: true}
 )
 
-watch([filterOption, searchItem],  () => {
+watch([filterOption, searchItem], () => {
     filteredData.value = {
       'filter': filterOption.value,
       'search': searchItem.value
     }
   }
 )
+
+async function onDraggable(data) {
+  const todo = data['moved']['element']
+  await todoProvider.value.changeOrder(todo, todos.value)
+}
 
 const paginateHandler = (page) => {
   currentPage.value = page
@@ -96,96 +101,102 @@ async function changeStatus(todoItem) {
 </script>
 
 <template>
-    <!--  Login and Register  -->
-    <div class="flex mb-4" v-if="!user?.id">
-      <a :href="route('login')" class="text-white hover:text-gray-200 mr-5 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
-        <i class="bx bx-log-in mr-1"></i>
-        <span>Login</span>
-      </a>
-      <a :href="route('register')" class="text-white hover:text-gray-200 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
+  <!--  Login and Register  -->
+  <div class="flex mb-4" v-if="!user?.id">
+    <a :href="route('login')" class="text-white hover:text-gray-200 mr-5 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
+      <i class="bx bx-log-in mr-1"></i>
+      <span>Login</span>
+    </a>
+    <a :href="route('register')" class="text-white hover:text-gray-200 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
       <i class="bx bx-user-plus text-[1.18rem] mr-1"></i>
-        <span>Register</span>
-      </a>
-    </div>
+      <span>Register</span>
+    </a>
+  </div>
 
-    <!--  Logout  -->
-    <div class="flex mb-4" v-if="user?.id">
-      <form :action="route('logout')" method="POST">
-        <button type="submit" class="text-white hover:text-gray-200 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
-          <i class="bx bx-log-out mr-1"></i>
-          <span>Logout</span>
-        </button>
-        <input type="hidden" name="_token" :value="csrfToken">
-        <div v-if="$page.props?.flash?.expired_message" class="text-red-900 mt-1 mb-2 text-sm">
-          {{ $page.props.flash.expired_message }}
-        </div>
-      </form>
-    </div>
-
-    <!--  Search  -->
-    <div class="flex items-center justify-between mb-4">
-      <div class="relative">
-        <i class="bx bx-search text-xl text-gray-300 absolute left-1 top-[.43rem]"></i>
-        <input
-          v-model="searchItem"
-          type="text"
-          placeholder="Search items..."
-          class="flex-1 rounded-lg pr-2 pl-6 py-1 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
-        />
+  <!--  Logout  -->
+  <div class="flex mb-4" v-if="user?.id">
+    <form :action="route('logout')" method="POST">
+      <button type="submit" class="text-white hover:text-gray-200 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
+        <i class="bx bx-log-out mr-1"></i>
+        <span>Logout</span>
+      </button>
+      <input type="hidden" name="_token" :value="csrfToken">
+      <div v-if="$page.props?.flash?.expired_message" class="text-red-900 mt-1 mb-2 text-sm">
+        {{ $page.props.flash.expired_message }}
       </div>
+    </form>
+  </div>
 
-      <FilterTodo @on-filter="doFilter"/>
+  <!--  Search  -->
+  <div class="flex items-center justify-between mb-4">
+    <div class="relative">
+      <i class="bx bx-search text-xl text-gray-300 absolute left-1 top-[.43rem]"></i>
+      <input
+        v-model="searchItem"
+        type="text"
+        placeholder="Search items..."
+        class="flex-1 rounded-lg pr-2 pl-6 py-1 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+      />
     </div>
 
-    <AddTodo @add-todo="addTodo"/>
+    <FilterTodo @on-filter="doFilter"/>
+  </div>
 
-    <!-- Todo list -->
-    <div class="space-y-4">
-      <!-- Single todo item -->
+  <AddTodo @add-todo="addTodo"/>
+
+  <!-- Todo list -->
+  <draggable
+    class="space-y-4"
+    v-model="todos"
+    group="people"
+    @start="drag=true"
+    @end="drag=false"
+    item-key="id"
+    @change="onDraggable"
+  >
+    <!-- Single todo item -->
+    <template #item="{element}">
       <div
-        v-for="(todoItem, index) in todos"
-        :key="index"
-        :id="todoItem.id"
-        ref="itemRefs"
-        @dblclick="changeStatus(todoItem)"
+        :id="element.id"
+        @dblclick="changeStatus(element)"
       >
-        <div class="flex items-center justify-between" v-if="todoItem.inEdit">
+        <div class="flex items-center justify-between" v-if="element.inEdit">
           <input
             class="bg-white rounded-l-lg px-4 py-2 w-full focus:outline-none"
-            v-model="todoItem.text"
-            @keydown.enter.prevent="onUpdate(todoItem)"
+            v-model="element.text"
+            @keydown.enter.prevent="onUpdate(element)"
           >
           <button
             class="text-green-600 bg-white bg-opacity-50 p-2 hover:text-green-500"
-            @click="onUpdate(todoItem)"
+            @click="onUpdate(element)"
           >
             <i class="bx bx-edit"></i>
           </button>
           <button
             class="text-red-500 bg-white bg-opacity-50 p-2 hover:text-red-700 rounded-r-lg"
-            @click="onCancel(todoItem)"
+            @click="onCancel(element)"
           >
             <i class="bx bx-x-circle"></i>
           </button>
         </div>
 
-        <div class="flex items-center justify-between bg-white bg-opacity-50 rounded-lg px-4 py-2" v-if="!todoItem.inEdit">
+        <div class="flex items-center justify-between bg-white bg-opacity-50 rounded-lg px-4 py-2" v-if="!element.inEdit">
           <span
             class="flex-1 text-gray-800 break-all select-none"
-            :class="todoItem.completed ? 'line-through' : ''"
+            :class="element.completed ? 'line-through' : ''"
           >
-            <span @dblclick.stop="onEdit(todoItem)">{{ todoItem.text }}</span>
+            <span @dblclick.stop="onEdit(element)">{{ element.text }}</span>
           </span>
           <div class="flex space-x-2">
             <!-- Edit icon -->
-            <button class="text-blue-500 hover:text-blue-700" title="Edit" @click="onEdit(todoItem)">
+            <button class="text-blue-500 hover:text-blue-700" title="Edit" @click="onEdit(element)">
               <i class="bx bx-edit-alt"></i>
             </button>
             <!-- Delete icon -->
             <button
               class="text-red-500 hover:text-red-700"
               title="Delete"
-              @click="openDeleteModal(todoItem)"
+              @click="openDeleteModal(element)"
             >
               <i class="bx bx-trash"></i>
             </button>
@@ -193,15 +204,16 @@ async function changeStatus(todoItem) {
             <button
               class="text-green-500 hover:text-green-700"
               title="completed"
-              @click="changeStatus(todoItem)"
+              @click="changeStatus(element)"
             >
-              <i class="bx bx-check completed-icon" v-if="!todoItem.completed"></i>
-              <i class="bx bx-check-double completed-icon" v-if="todoItem.completed"></i>
+              <i class="bx bx-check completed-icon" v-if="!element.completed"></i>
+              <i class="bx bx-check-double completed-icon" v-if="element.completed"></i>
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </template>
+  </draggable>
 
   <div class="flex justify-center mt-5" v-if="todosInfo.total > todosInfo.per_page">
     <vue-awesome-paginate
@@ -238,6 +250,7 @@ async function changeStatus(todoItem) {
   border-radius: 22px;
   overflow: hidden;
 }
+
 .paginate-buttons {
   width: 33px;
   height: 33px;
@@ -245,24 +258,31 @@ async function changeStatus(todoItem) {
   border: none;
   border-inline: 1px solid theme('colors.indigo.400')
 }
+
 .paginate-buttons {
   @apply bg-indigo-600 text-white flex items-center justify-center
 }
+
 .active-page {
   @apply bg-indigo-400 text-white
 }
+
 .paginate-buttons:hover {
   @apply bg-indigo-800
 }
+
 .active-page:hover {
   @apply bg-indigo-400
 }
+
 .back-button {
   border-inline-start: none;
 }
+
 .next-button {
   border-inline-end: none;
 }
+
 .back-button svg {
   transform: rotate(180deg);
 }
