@@ -47,12 +47,28 @@ class TodoController extends Controller
 
   public function get(Request $request)
   {
-    $todos = auth()->user()->todos()->orderBy('created_at', 'desc')->paginate($request->perPage);
+    $todos = auth()->user()->todos();
+    if (isset($request->filteredData['filter'])) {
+      $filter = $this->filter($request->filteredData['filter']);
+      $todos->whereIn('completed', $filter);
+    }
+    $todos = $todos->orderBy('created_at', 'desc')->paginate($request->perPage);
     return response()->json($todos, 200);
   }
 
   private function isAuthorized(Todo $todo, String $action)
   {
     if ($todo->user_id !== auth()->id())  return throw new \Exception("You are not authorized to $action this todo.");
+  }
+
+  private function filter($filter)
+  {
+    if ($filter === 'active') {
+     return [0];
+    } elseif ($filter === 'completed') {
+      return [1];
+    } else {
+      return  [0, 1];
+    }
   }
 }

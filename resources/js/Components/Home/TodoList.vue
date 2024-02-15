@@ -30,6 +30,7 @@ watch([currentPage, filteredData, runFetch], async () => {
   todoProvider.value = TodoProvider.createTodoProvider(user.value)
   todosInfo.value = await todoProvider.value.get(filteredData.value, currentPage.value)
   todos.value = todosInfo.value.data
+  console.log(todosInfo.value )
 },
   { immediate: true }
 )
@@ -87,17 +88,6 @@ function onCancel(todoItem) {
 
 function doFilter(filter) {
   filterOption.value = filter
-}
-
-function filteredTodo() {
-  const searchedTodo = searchTodo()
-
-  if (filterOption.value === 'all')
-    return searchedTodo
-  if (filterOption.value === 'active')
-    return searchedTodo.filter(item => !item.completed)
-  if (filterOption.value === 'completed')
-    return searchedTodo.filter(item => item.completed)
 }
 
 function searchTodo() {
@@ -159,7 +149,7 @@ async function changeStatus(todoItem) {
     <div class="space-y-4">
       <!-- Single todo item -->
       <div
-        v-for="(todoItem, index) in filteredTodo()"
+        v-for="(todoItem, index) in todos"
         :key="index"
         :id="todoItem.id"
         ref="itemRefs"
