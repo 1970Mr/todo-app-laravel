@@ -30,12 +30,11 @@ watch([currentPage, filteredData, runFetch], async () => {
   todoProvider.value = TodoProvider.createTodoProvider(user.value)
   todosInfo.value = await todoProvider.value.get(filteredData.value, currentPage.value)
   todos.value = todosInfo.value.data
-  console.log(todosInfo.value )
 },
   { immediate: true }
 )
 
-watch([filterOption],  () => {
+watch([filterOption, searchItem],  () => {
     filteredData.value = {
       'filter': filterOption.value,
       'search': searchItem.value
@@ -49,6 +48,7 @@ const paginateHandler = (page) => {
 
 function addTodo(data) {
   todos.value.unshift(data)
+  runFetch.value = new Date()
 }
 
 function openDeleteModal(todoItem) {
@@ -74,6 +74,7 @@ async function onUpdate(todoItem) {
   const response = await todoProvider.value.update(todoItem)
   if (!response) return
   todoItem.inEdit = false
+  runFetch.value = new Date()
 }
 
 function onEdit(todoItem) {
@@ -90,14 +91,10 @@ function doFilter(filter) {
   filterOption.value = filter
 }
 
-function searchTodo() {
-  const searchRegex = new RegExp(searchItem.value, 'i');
-  return searchItem.value !== '' ? todos.value.filter(item => searchRegex.test(item.text)) : todos.value
-}
-
 async function changeStatus(todoItem) {
   todoItem.completed = !todoItem.completed
   await todoProvider.value.update(todoItem)
+  runFetch.value = new Date()
 }
 </script>
 

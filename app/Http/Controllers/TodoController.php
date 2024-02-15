@@ -52,6 +52,10 @@ class TodoController extends Controller
       $filter = $this->filter($request->filteredData['filter']);
       $todos->whereIn('completed', $filter);
     }
+    if (isset($request->filteredData['search'])) {
+      $search = $request->filteredData['search'];
+      $todos->where('text', 'LIKE', "%$search%");
+    }
     $todos = $todos->orderBy('created_at', 'desc')->paginate($request->perPage);
     return response()->json($todos, 200);
   }
