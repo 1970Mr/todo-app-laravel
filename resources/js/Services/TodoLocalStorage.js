@@ -1,18 +1,32 @@
 class TodoLocalStorage {
-  async get(page = 1, perPage = 5) {
-    const todos = this._getTodos()
+  async get(filteredData, page = 1, perPage = 5) {
+    const todos = this._getTodos();
+
+    // Apply filters
+    let filteredTodos = todos;
+    if (filteredData.filter === 'active') {
+      filteredTodos = filteredTodos.filter(todo => !todo.completed);
+    } else if (filteredData.filter === 'completed') {
+      filteredTodos = filteredTodos.filter(todo => todo.completed);
+    }
+
+    // Apply search
+    if (filteredData.search) {
+      const searchTerm = filteredData.search.toLowerCase();
+      filteredTodos = filteredTodos.filter(todo => todo.text.toLowerCase().includes(searchTerm));
+    }
 
     // Calculate pagination
     const startIndex = (page - 1) * perPage;
     const endIndex = startIndex + perPage;
-    const paginatedTodos = todos.slice(startIndex, endIndex);
+    const paginatedTodos = filteredTodos.slice(startIndex, endIndex);
 
     // Simulate response structure similar to Laravel pagination
-    const totalPages = Math.ceil(todos.length / perPage);
+    const totalPages = Math.ceil(filteredTodos.length / perPage);
     const currentPage = page;
     const from = startIndex + 1;
-    const to = Math.min(endIndex, todos.length);
-    const total = todos.length;
+    const to = Math.min(endIndex, filteredTodos.length);
+    const total = filteredTodos.length;
 
     return Promise.resolve({
       current_page: currentPage,
@@ -24,6 +38,7 @@ class TodoLocalStorage {
       total_pages: totalPages,
     });
   }
+
 
   async store(data) {
     const todos = await this._getTodos();

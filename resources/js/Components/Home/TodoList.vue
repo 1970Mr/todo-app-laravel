@@ -2,7 +2,7 @@
 import AddTodo from "@/Components/Home/AddTodo.vue"
 import DeleteModal from "@/Components/DeleteModal.vue";
 import FilterTodo from "@/Components/Home/FilterTodo.vue"
-import {computed, onMounted, onUpdated, reactive, ref, watch} from "vue"
+import {onBeforeMount, onBeforeUnmount, ref, watch} from "vue"
 import route from 'ziggy-js'
 import TodoProvider from '@/Helpers/TodoProvider'
 import {usePage} from "@inertiajs/vue3";
@@ -20,14 +20,11 @@ const user = ref({})
 const filteredData = ref({})
 const runFetch = ref()
 
-onMounted( () => {
-  user.value = usePage().props?.auth?.user
-  csrfToken.value = usePage().props?.csrf_token;
-  currentPage.value = 1
-})
+user.value = usePage().props?.auth?.user
+csrfToken.value = usePage().props?.csrf_token;
+todoProvider.value = TodoProvider.createTodoProvider(user.value?.id)
 
 watch([currentPage, filteredData, runFetch], async () => {
-  todoProvider.value = TodoProvider.createTodoProvider(user.value)
   todosInfo.value = await todoProvider.value.get(filteredData.value, currentPage.value)
   todos.value = todosInfo.value.data
 },
@@ -100,7 +97,7 @@ async function changeStatus(todoItem) {
 
 <template>
     <!--  Login and Register  -->
-    <div class="flex mb-4" v-if="!user">
+    <div class="flex mb-4" v-if="!user?.id">
       <a :href="route('login')" class="text-white hover:text-gray-200 mr-5 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
         <i class="bx bx-log-in mr-1"></i>
         <span>Login</span>
@@ -112,7 +109,7 @@ async function changeStatus(todoItem) {
     </div>
 
     <!--  Logout  -->
-    <div class="flex mb-4" v-if="user">
+    <div class="flex mb-4" v-if="user?.id">
       <form :action="route('logout')" method="POST">
         <button type="submit" class="text-white hover:text-gray-200 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
           <i class="bx bx-log-out mr-1"></i>
