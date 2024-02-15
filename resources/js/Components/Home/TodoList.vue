@@ -2,7 +2,7 @@
 import AddTodo from "@/Components/Home/AddTodo.vue"
 import DeleteModal from "@/Components/DeleteModal.vue";
 import FilterTodo from "@/Components/Home/FilterTodo.vue"
-import {onMounted, ref} from "vue"
+import {computed, onMounted, onUpdated, reactive, ref, watch} from "vue"
 import route from 'ziggy-js'
 import TodoProvider from '@/Helpers/TodoProvider'
 import {usePage} from "@inertiajs/vue3";
@@ -17,26 +17,37 @@ const todoProvider = ref('')
 const todosInfo = ref('')
 const currentPage = ref(1)
 const user = ref({})
+const filteredData = ref({})
+const runFetch = ref()
 
 onMounted( () => {
   user.value = usePage().props?.auth?.user
   csrfToken.value = usePage().props?.csrf_token;
-  fetchTodos()
+  currentPage.value = 1
 })
 
-async function fetchTodos(page) {
+watch([currentPage, filteredData, runFetch], async () => {
   todoProvider.value = TodoProvider.createTodoProvider(user.value)
-  todosInfo.value = await todoProvider.value.get(page)
+  todosInfo.value = await todoProvider.value.get(filteredData.value, currentPage.value)
   todos.value = todosInfo.value.data
-  currentPage.value = todosInfo.value.current_page
-}
+},
+  { immediate: true }
+)
+
+watch([filterOption],  () => {
+    filteredData.value = {
+      'filter': filterOption.value,
+      'search': searchItem.value
+    }
+  }
+)
+
 const paginateHandler = (page) => {
-  fetchTodos(page)
+  currentPage.value = page
 };
 
 function addTodo(data) {
-  // todos.value.unshift(data)
-  fetchTodos(currentPage.value)
+  todos.value.unshift(data)
 }
 
 function openDeleteModal(todoItem) {
@@ -54,7 +65,7 @@ async function onDelete() {
     (item) => item.id !== selectedTodoItem.value.id
   )
   closeDeleteModal()
-  fetchTodos(currentPage.value)
+  runFetch.value = new Date()
 }
 
 async function onUpdate(todoItem) {
