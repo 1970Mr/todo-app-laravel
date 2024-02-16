@@ -42,7 +42,8 @@ class TodoLocalStorage {
 
   async store(data) {
     const todos = await this._getTodos();
-    const newTodo = { id: this._generateUniqueId(), text: data.text, completed: data.completed };
+    const lastOrder = todos.length > 0 ? todos[0]?.order : 0
+    const newTodo = { id: this._generateUniqueId(), text: data.text, completed: data.completed, order: lastOrder + 1 };
     todos.unshift(newTodo);
     localStorage.setItem('todos', JSON.stringify(todos));
     return Promise.resolve(newTodo);
@@ -57,7 +58,7 @@ class TodoLocalStorage {
 
   async update(data) {
     const todos = await this._getTodos();
-    const updatedTodo = { id: data.id, text: data.text, completed: data.completed };
+    const updatedTodo = { id: data.id, text: data.text, completed: data.completed, order: data.order };
     const updatedTodos = todos.map(todo => (todo.id === data.id ? updatedTodo : todo));
     localStorage.setItem('todos', JSON.stringify(updatedTodos));
     return Promise.resolve(data);
@@ -69,7 +70,9 @@ class TodoLocalStorage {
 
   _getTodos() {
     let todos = localStorage.getItem('todos');
-    return todos ? JSON.parse(todos) : [];
+    todos = todos ? JSON.parse(todos) : [];
+    todos.sort((a, b) => a.order - b.order).reverse()
+    return todos
   }
 }
 
