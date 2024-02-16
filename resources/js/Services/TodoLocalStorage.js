@@ -1,3 +1,5 @@
+import TodoOrder from "@/Helpers/TodoOrder.js";
+
 class TodoLocalStorage {
   async get(filteredData, page = 1, perPage = 5) {
     const todos = this._getTodos();
@@ -62,6 +64,19 @@ class TodoLocalStorage {
     const updatedTodos = todos.map(todo => (todo.id === data.id ? updatedTodo : todo));
     localStorage.setItem('todos', JSON.stringify(updatedTodos));
     return Promise.resolve(data);
+  }
+
+  async changeOrder(todo, todos) {
+    const newOrder = TodoOrder.newOrder(todo, todos)
+    todo.order = newOrder
+    await this.update(todo)
+    const allTodos = await this._getTodos();
+    const updatedTodos = allTodos.map(item => {
+      if (item.order >= todo.order && item.id !== todo.id) item.order++
+      return item
+    })
+    localStorage.setItem('todos', JSON.stringify(updatedTodos));
+    return Promise.resolve(newOrder);
   }
 
   _generateUniqueId() {

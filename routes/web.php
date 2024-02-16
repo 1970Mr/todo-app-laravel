@@ -13,7 +13,7 @@ Route::prefix('todo')->controller(TodoController::class)->name('todo.')->middlew
   Route::post('/', 'store')->name('store');
   Route::put('{todo}', 'update')->name('update');
   Route::delete('{todo}', 'destroy')->name('destroy');
-  Route::put('/{todo}', 'updateOrder')->name('order');
+  Route::put('/order/{todo}', 'updateOrder')->name('order');
 });
 
 require __DIR__.'/auth.php';
