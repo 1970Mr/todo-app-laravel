@@ -13,6 +13,7 @@ class Todo extends Model
     'text',
     'completed',
     'order',
+    'user_id',
   ];
 
   protected $hidden = [
