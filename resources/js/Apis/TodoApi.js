@@ -45,8 +45,7 @@ class TodoApi {
   async changeOrder(todo, todos) {
     try {
       const newOrder = TodoOrder.newOrder(todo, todos)
-      todo.order = newOrder
-      await axios.put(route('todo.order', {todo}), {newOrder})
+      await axios.put(route('todo.order', {todo: todo.id}), {newOrder})
       return newOrder;
     } catch (error) {
       console.error('Error changing todos order:', error);

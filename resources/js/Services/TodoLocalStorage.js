@@ -68,11 +68,10 @@ class TodoLocalStorage {
 
   async changeOrder(todo, todos) {
     const newOrder = TodoOrder.newOrder(todo, todos)
-    todo.order = newOrder
-    await this.update(todo)
     const allTodos = await this._getTodos();
     const updatedTodos = allTodos.map(item => {
-      if (item.order >= todo.order && item.id !== todo.id) item.order++
+      if (item.id === todo.id) item.order = newOrder
+      if (item.order >= newOrder && item.id !== todo.id) item.order++
       return item
     })
     localStorage.setItem('todos', JSON.stringify(updatedTodos));

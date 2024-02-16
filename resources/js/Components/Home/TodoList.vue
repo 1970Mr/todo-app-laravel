@@ -41,7 +41,9 @@ watch([filterOption, searchItem], () => {
 
 async function onDraggable(data) {
   const todo = data['moved']['element']
-  await todoProvider.value.changeOrder(todo, todos.value)
+  const newOrder = await todoProvider.value.changeOrder(todo, todos.value)
+  todo.order = newOrder
+  runFetch.value = new Date()
 }
 
 const paginateHandler = (page) => {
@@ -165,6 +167,7 @@ async function changeStatus(todoItem) {
             class="bg-white rounded-l-lg px-4 py-2 w-full focus:outline-none"
             v-model="element.text"
             @keydown.enter.prevent="onUpdate(element)"
+            @dblclick.stop
           >
           <button
             class="text-green-600 bg-white bg-opacity-50 p-2 hover:text-green-500"
