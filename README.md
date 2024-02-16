@@ -16,6 +16,7 @@ This project is a Todo application built using Laravel, Vue.js, and Tailwind CSS
 - **Update Todo:** Users can edit existing todo items by clicking on them and modifying the text.
 - **Delete Todo:** Users can remove todo items by clicking on the delete button next to each item.
 - **Mark Todo as Completed:** Users can mark todo items as completed by clicking on the checkbox next to each item.
+- **Drag and Drop:** Todo items can be reordered by dragging and dropping them to a new position. Changes in order are saved automatically.
 - **Filter Todos:** Users can filter todo items based on their completion status (All, Active, Completed).
 - **Search Todos:** Users can search for specific todo items by typing in the search input field.
 - **Register:** Users can register for an account to access the todo application.
