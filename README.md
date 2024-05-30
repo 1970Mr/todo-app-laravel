@@ -37,7 +37,7 @@ To run this project locally, follow these steps:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/github-1970/todo-app-laravel
+   git clone https://github.com/1970Mr/todo-app-laravel
    ```
 
 2. Navigate to the project directory:
