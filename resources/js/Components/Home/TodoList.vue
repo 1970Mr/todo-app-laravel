@@ -10,39 +10,29 @@ import draggable from 'vuedraggable'
 
 const todos = ref([])
 const selectedTodoItem = ref(null)
-const filterOption = ref('all')
-const searchItem = ref('')
+const statusFilter = ref('all')
+const searchItem = ref(null)
 const csrfToken = ref('')
 const todoProvider = ref('')
 const todosInfo = ref('')
 const currentPage = ref(1)
 const user = ref({})
-const filteredData = ref({})
 const runFetch = ref()
 
 user.value = usePage().props?.auth?.user
 csrfToken.value = usePage().props?.csrf_token;
 todoProvider.value = TodoProvider.createTodoProvider(user.value?.id)
 
-watch([currentPage, filteredData, runFetch], async () => {
-    todosInfo.value = await todoProvider.value.get(filteredData.value, currentPage.value)
+watch([currentPage, statusFilter, searchItem, runFetch], async () => {
+    todosInfo.value = await todoProvider.value.get(currentPage.value, 5, statusFilter.value, searchItem.value)
     todos.value = todosInfo.value.data
   },
   {immediate: true}
 )
 
-watch([filterOption, searchItem], () => {
-    filteredData.value = {
-      'filter': filterOption.value,
-      'search': searchItem.value
-    }
-  }
-)
-
 async function onDraggable(data) {
   const todo = data['moved']['element']
-  const newOrder = await todoProvider.value.changeOrder(todo, todos.value)
-  todo.order = newOrder
+  todo.order = await todoProvider.value.changeOrder(todo, todos.value)
   runFetch.value = new Date()
 }
 
@@ -92,7 +82,7 @@ function onCancel(todoItem) {
 }
 
 function doFilter(filter) {
-  filterOption.value = filter
+  statusFilter.value = filter
 }
 
 async function changeStatus(todoItem) {

@@ -2,7 +2,7 @@
 import {defineEmits} from 'vue'
 
 const emit = defineEmits(['todoList'])
-const filterOptions = ['all', 'active', 'completed']
+const statusFilters = ['all', 'active', 'completed']
 
 function filterTodo(filter) {
   emit('onFilter', filter)
@@ -17,10 +17,10 @@ function filterTodo(filter) {
         @change="filterTodo($event.target.value)"
     >
       <option
-          v-for="(filterOption, index) in filterOptions"
+          v-for="(statusFilter, index) in statusFilters"
           :key="index"
-          :value="filterOption"
-      >{{ filterOption.toUpperCase() }}
+          :value="statusFilter"
+      >{{ statusFilter.toUpperCase() }}
       </option>
     </select>
   </div>

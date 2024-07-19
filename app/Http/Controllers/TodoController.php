@@ -57,17 +57,12 @@ class TodoController extends Controller
 
   public function get(Request $request): JsonResponse
   {
-    $todos = auth()->user()->todos();
-    if (isset($request->filteredData['filter'])) {
-      $filter = $this->todoService->filter($request->filteredData['filter']);
-      $todos->whereIn('completed', $filter);
-    }
-    if (isset($request->filteredData['search'])) {
-      $search = $request->filteredData['search'];
-      $todos->where('text', 'LIKE', "%$search%");
-    }
-    $todos = $todos->orderBy('order', 'desc')->paginate($request->perPage);
-    return response()->json($todos, 200);
+    $todos = $this->todoService->getTodos(
+      $request->get('perPage', 5),
+      $request->get('statusFilter'),
+      $request->get('search'),
+    );
+    return response()->json($todos);
   }
 
   /**
@@ -82,7 +77,13 @@ class TodoController extends Controller
   {
     $this->isAuthorized($todo, 'updateOrder');
     $todo->update(['order' => $request->newOrder]);
-    auth()->user()->todos()->where('order', '>=', $todo->order)->whereNot('id', $todo->id)->increment('order');
-    return response()->json(['message' => 'Changes saved successfully'], 200);
+    $user = auth()->user();
+    if ($user->todos()->where('order', $todo->order)->exists()) {
+      auth()->user()->todos()
+        ->where('order', '>=', $todo->order)
+        ->whereNot('id', $todo->id)
+        ->increment('order');
+    }
+    return response()->json(['message' => 'Changes saved successfully']);
   }
 }

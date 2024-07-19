@@ -2,9 +2,9 @@ import route from 'ziggy-js';
 import TodoOrder from "@/Helpers/TodoOrder.js";
 
 class TodoApi {
-  async get(filteredData, page = 1, perPage = 5) {
+  async get(page = 1, perPage = 5, statusFilter = null, search = null) {
     try {
-      const response = await axios.get(route('todos.get'), {params: {page, perPage, filteredData}});
+      const response = await axios.get(route('todos.get'), {params: {page, perPage, statusFilter, search}});
       return response.data;
     } catch (error) {
       console.error('Error getting todos:', error);
