@@ -1,19 +1,20 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TodoController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::get('/', [TodoController::class, 'index'])->name('todo.index');
+Route::get('/', [TodoController::class, 'index'])->name('todos.index');
 
-Route::prefix('todo')->controller(TodoController::class)->name('todo.')->middleware('auth')->group(function () {
-  Route::get('/', 'get')->name('get');
-  Route::post('/', 'store')->name('store');
-  Route::put('{todo}', 'update')->name('update');
-  Route::delete('{todo}', 'destroy')->name('destroy');
-  Route::put('/order/{todo}', 'updateOrder')->name('order');
-});
+Route::prefix('todos')
+  ->controller(TodoController::class)
+  ->name('todos.')
+  ->middleware('auth')
+  ->group(function () {
+    Route::get('/', 'get')->name('get');
+    Route::post('/', 'store')->name('store');
+    Route::put('{todo}', 'update')->name('update');
+    Route::delete('{todo}', 'destroy')->name('destroy');
+    Route::put('/update-order/{todo}', 'updateOrder')->name('update-order');
+  });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

@@ -4,7 +4,7 @@ import TodoOrder from "@/Helpers/TodoOrder.js";
 class TodoApi {
   async get(filteredData, page = 1, perPage = 5) {
     try {
-      const response = await axios.get(route('todo.get'), {params: {page, perPage, filteredData}});
+      const response = await axios.get(route('todos.get'), {params: {page, perPage, filteredData}});
       return response.data;
     } catch (error) {
       console.error('Error getting todos:', error);
@@ -14,7 +14,7 @@ class TodoApi {
 
   async store(data) {
     try {
-      const response = await axios.post(route('todo.store'), data);
+      const response = await axios.post(route('todos.store'), data);
       return response.data;
     } catch (error) {
       console.error('Error adding todo:', error);
@@ -24,7 +24,7 @@ class TodoApi {
 
   async destroy(id) {
     try {
-      await axios.delete(route('todo.destroy', { todo: id }));
+      await axios.delete(route('todos.destroy', { todo: id }));
       return true;
     } catch (error) {
       console.error('Error deleting todo:', error);
@@ -34,7 +34,7 @@ class TodoApi {
 
   async update(data) {
     try {
-      const response = await axios.put(route('todo.update', { todo: data.id }), data);
+      const response = await axios.put(route('todos.update', { todo: data.id }), data);
       return response.data;
     } catch (error) {
       console.error('Error updating todo:', error);
@@ -45,7 +45,7 @@ class TodoApi {
   async changeOrder(todo, todos) {
     try {
       const newOrder = TodoOrder.newOrder(todo, todos)
-      await axios.put(route('todo.order', {todo: todo.id}), {newOrder})
+      await axios.put(route('todos.update-order', {todo: todo.id}), {newOrder})
       return newOrder;
     } catch (error) {
       console.error('Error changing todos order:', error);
