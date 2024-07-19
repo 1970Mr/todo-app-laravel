@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DTOs\TodoDTO;
 use App\Http\Requests\TodoStoreRequest;
 use App\Http\Requests\TodoUpdateRequest;
+use App\Http\Requests\UpdateOrderRequest;
 use App\Models\Todo;
 use App\Services\Todo\TodoService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -73,17 +74,10 @@ class TodoController extends Controller
     if ($todo->user_id !== auth()->id()) throw new AuthorizationException("You are not authorized to $action this todo.");
   }
 
-  public function updateOrder(Request $request, Todo $todo): JsonResponse
+  public function updateOrder(UpdateOrderRequest $request, Todo $todo): JsonResponse
   {
     $this->isAuthorized($todo, 'updateOrder');
-    $todo->update(['order' => $request->newOrder]);
-    $user = auth()->user();
-    if ($user->todos()->where('order', $todo->order)->exists()) {
-      auth()->user()->todos()
-        ->where('order', '>=', $todo->order)
-        ->whereNot('id', $todo->id)
-        ->increment('order');
-    }
-    return response()->json(['message' => 'Changes saved successfully']);
+    $this->todoService->updateOrder($todo, $request->get('newOrder'));
+    return response()->json();
   }
 }
