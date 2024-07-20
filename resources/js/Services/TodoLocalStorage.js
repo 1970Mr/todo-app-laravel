@@ -1,4 +1,4 @@
-import TodoOrder from "@/Helpers/TodoOrder.js";
+import PositionHandler from "@/Helpers/PositionHandler.js";
 
 class TodoLocalStorage {
   async get(page = 1, perPage = 5, statusFilter = null, search = null) {
@@ -44,8 +44,8 @@ class TodoLocalStorage {
 
   async store(data) {
     const todos = await this._getTodos();
-    const lastOrder = todos.length > 0 ? todos[0]?.order : 0
-    const newTodo = { id: this._generateUniqueId(), text: data.text, completed: data.completed, order: lastOrder + 1 };
+    const lastPosition = todos.length > 0 ? todos[0]?.position : 0
+    const newTodo = { id: this._generateUniqueId(), text: data.text, completed: data.completed, position: lastPosition + 1 };
     todos.unshift(newTodo);
     localStorage.setItem('todos', JSON.stringify(todos));
     return Promise.resolve(newTodo);
@@ -60,22 +60,22 @@ class TodoLocalStorage {
 
   async update(data) {
     const todos = await this._getTodos();
-    const updatedTodo = { id: data.id, text: data.text, completed: data.completed, order: data.order };
+    const updatedTodo = { id: data.id, text: data.text, completed: data.completed, position: data.position };
     const updatedTodos = todos.map(todo => (todo.id === data.id ? updatedTodo : todo));
     localStorage.setItem('todos', JSON.stringify(updatedTodos));
     return Promise.resolve(data);
   }
 
-  async changeOrder(todo, todos) {
-    const newOrder = TodoOrder.newOrder(todo, todos)
+  async updatePosition(todo, todos) {
+    const newPosition = PositionHandler.newPosition(todo, todos)
     const allTodos = await this._getTodos();
     const updatedTodos = allTodos.map(item => {
-      if (item.id === todo.id) item.order = newOrder
-      if (item.order >= newOrder && item.id !== todo.id) item.order++
+      if (item.id === todo.id) item.position = newPosition
+      if (item.position >= newPosition && item.id !== todo.id) item.position++
       return item
     })
     localStorage.setItem('todos', JSON.stringify(updatedTodos));
-    return Promise.resolve(newOrder);
+    return Promise.resolve(newPosition);
   }
 
   _generateUniqueId() {
@@ -85,7 +85,7 @@ class TodoLocalStorage {
   _getTodos() {
     let todos = localStorage.getItem('todos');
     todos = todos ? JSON.parse(todos) : [];
-    todos.sort((a, b) => a.order - b.order).reverse()
+    todos.sort((a, b) => a.position - b.position).reverse()
     return todos
   }
 }

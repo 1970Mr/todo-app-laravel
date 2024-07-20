@@ -1,7 +1,5 @@
 <script setup>
-import {ref, defineEmits, onMounted} from "vue";
-import TodoApi from "@/Apis/TodoApi.js";
-import TodoLocalStorage from "@/Services/TodoLocalStorage.js";
+import {defineEmits, onMounted, ref} from "vue";
 import {usePage} from "@inertiajs/vue3";
 import TodoProvider from "@/Helpers/TodoProvider.js";
 
@@ -14,12 +12,12 @@ onMounted(() => {
   todoProvider.value = TodoProvider.createTodoProvider(user)
 })
 
-async function addTodo() {
+async function addItem() {
   if (!newTodo.value.trim()) return
   const data = {text: newTodo.value, completed: false}
   const response = await todoProvider.value.store(data)
   if (!response) return
-  emit('addTodo', response)
+  emit('addItem', response)
   newTodo.value = ''
 }
 </script>
@@ -28,7 +26,7 @@ async function addTodo() {
   <!-- Add todo item -->
   <div class="flex mb-4">
     <input
-      @keydown.enter.prevent="addTodo"
+      @keydown.enter.prevent="addItem"
       v-model="newTodo"
       type="text"
       placeholder="Add a new todo item"
@@ -36,7 +34,7 @@ async function addTodo() {
       autofocus
     />
     <button
-      @click="addTodo"
+      @click="addItem"
       class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-r-lg focus:outline-none focus:ring-2 ring-inset focus:ring-indigo-400"
     >
       Add

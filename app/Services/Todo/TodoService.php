@@ -15,8 +15,8 @@ class TodoService
   {
     $user = auth()->user();
     $todo = $user->todos()->make($todoDTO->items());
-    $lastOrder = $user->todos()->max('order') ?? 0;
-    $todo->order = $lastOrder + 1;
+    $lastPosition = $user->todos()->max('position') ?? 0;
+    $todo->position = $lastPosition + 1;
     $todo->save();
     return $todo;
   }
@@ -26,7 +26,7 @@ class TodoService
     $todosQuery = auth()->user()->todos();
     $this->setStatus($status, $todosQuery);
     $this->adjustSearch($search, $todosQuery);
-    return $todosQuery->orderBy('order', 'desc')->paginate($perPage);
+    return $todosQuery->orderBy('position', 'desc')->paginate($perPage);
   }
 
   private function setStatus(?string $status, HasMany $todosQuery): void
@@ -55,34 +55,34 @@ class TodoService
     $todosQuery->where('text', 'LIKE', "%$search%");
   }
 
-  public function updateOrder(Todo $todo, $newOrder): void
+  public function updatePosition(Todo $todo, $newPosition): void
   {
     DB::beginTransaction();
     try {
-      $todo->update(['order' => $newOrder]);
-      $this->manageOrderUniqueness($todo);
+      $todo->update(['position' => $newPosition]);
+      $this->managePositionUniqueness($todo);
       DB::commit();
     } catch (Exception $e) {
       DB::rollBack();
     }
   }
 
-  private function manageOrderUniqueness(Todo $todo): void
+  private function managePositionUniqueness(Todo $todo): void
   {
-    $orderNotUnique = auth()->user()->todos()
-      ->where('order', $todo->order)
+    $positionNotUnique = auth()->user()->todos()
+      ->where('position', $todo->position)
       ->whereNot('id', $todo->id)
       ->exists();
-    if ($orderNotUnique) {
-      $this->incrementOtherOrders($todo);
+    if ($positionNotUnique) {
+      $this->incrementOtherPositions($todo);
     }
   }
 
-  private function incrementOtherOrders(Todo $todo): void
+  private function incrementOtherPositions(Todo $todo): void
   {
     auth()->user()->todos()
-      ->where('order', '>=', $todo->order)
+      ->where('position', '>=', $todo->position)
       ->whereNot('id', $todo->id)
-      ->increment('order');
+      ->increment('position');
   }
 }

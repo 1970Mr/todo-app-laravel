@@ -5,3 +5,53 @@
 #app {
   @apply bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 min-h-screen flex justify-center items-center p-10
 }
+
+.completed-icon {
+  margin-right: -0.5rem;
+}
+
+.pagination-container {
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.paginate-buttons {
+  width: 33px;
+  height: 33px;
+  cursor: pointer;
+  border: none;
+  border-inline: 1px solid theme('colors.indigo.400')
+}
+
+.paginate-buttons {
+  @apply bg-indigo-600 text-white flex items-center justify-center
+}
+
+.active-page {
+  @apply bg-indigo-400 text-white
+}
+
+.paginate-buttons:hover {
+  @apply bg-indigo-800
+}
+
+.active-page:hover {
+  @apply bg-indigo-400
+}
+
+.back-button {
+  border-inline-start: none;
+}
+
+.next-button {
+  border-inline-end: none;
+}
+
+.back-button svg {
+  transform: rotate(180deg);
+}
+
+.back-button:active,
+.next-button:active {
+  @apply bg-indigo-800
+}

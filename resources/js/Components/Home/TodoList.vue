@@ -32,14 +32,15 @@ watch([currentPage, statusFilter, searchItem, runFetch], async () => {
 
 async function onDraggable(data) {
   const todo = data['moved']['element']
-  todo.order = await todoProvider.value.changeOrder(todo, todos.value)
+  todo.position = await todoProvider.value.updatePosition(todo, todos.value)
+  runFetch.value = new Date()
 }
 
 const paginateHandler = (page) => {
   currentPage.value = page
 };
 
-function addTodo(data) {
+function addItem(data) {
   todos.value.unshift(data)
   runFetch.value = new Date()
 }
@@ -132,7 +133,7 @@ async function changeStatus(todoItem) {
     <FilterTodo @on-filter="doFilter"/>
   </div>
 
-  <AddTodo @add-todo="addTodo"/>
+  <AddTodo @add-item="addItem"/>
 
   <!-- Todo list -->
   <draggable
@@ -231,55 +232,3 @@ async function changeStatus(todoItem) {
     @close-delete-modal="closeDeleteModal"/>
 
 </template>
-
-<style>
-.completed-icon {
-  margin-right: -0.5rem;
-}
-
-.pagination-container {
-  border-radius: 22px;
-  overflow: hidden;
-}
-
-.paginate-buttons {
-  width: 33px;
-  height: 33px;
-  cursor: pointer;
-  border: none;
-  border-inline: 1px solid theme('colors.indigo.400')
-}
-
-.paginate-buttons {
-  @apply bg-indigo-600 text-white flex items-center justify-center
-}
-
-.active-page {
-  @apply bg-indigo-400 text-white
-}
-
-.paginate-buttons:hover {
-  @apply bg-indigo-800
-}
-
-.active-page:hover {
-  @apply bg-indigo-400
-}
-
-.back-button {
-  border-inline-start: none;
-}
-
-.next-button {
-  border-inline-end: none;
-}
-
-.back-button svg {
-  transform: rotate(180deg);
-}
-
-.back-button:active,
-.next-button:active {
-  @apply bg-indigo-800
-}
-</style>

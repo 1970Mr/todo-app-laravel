@@ -1,5 +1,6 @@
 import route from 'ziggy-js';
-import TodoOrder from "@/Helpers/TodoOrder.js";
+import PositionHandler from "@/Helpers/PositionHandler.js";
+import {console} from "vuedraggable/src/util/console.js";
 
 class TodoApi {
   async get(page = 1, perPage = 5, statusFilter = null, search = null) {
@@ -42,13 +43,13 @@ class TodoApi {
     }
   }
 
-  async changeOrder(todo, todos) {
+  async updatePosition(todo, todos) {
     try {
-      const newOrder = TodoOrder.newOrder(todo, todos)
-      await axios.put(route('todos.update-order', {todo: todo.id}), {newOrder})
-      return newOrder;
+      const newPosition = PositionHandler.newPosition(todo, todos)
+      await axios.put(route('todos.update-position', {todo: todo.id}), {newPosition})
+      return newPosition;
     } catch (error) {
-      console.error('Error changing todos order:', error);
+      console.error('Error changing todos position:', error);
       return false
     }
   }

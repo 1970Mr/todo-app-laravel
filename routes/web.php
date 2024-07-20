@@ -14,7 +14,7 @@ Route::prefix('todos')
     Route::post('/', 'store')->name('store');
     Route::put('{todo}', 'update')->name('update');
     Route::delete('{todo}', 'destroy')->name('destroy');
-    Route::put('/update-order/{todo}', 'updateOrder')->name('update-order');
+    Route::put('/update-position/{todo}', 'updatePosition')->name('update-position');
   });
 
 require __DIR__ . '/auth.php';

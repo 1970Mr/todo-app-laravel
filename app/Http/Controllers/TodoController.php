@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\DTOs\TodoDTO;
 use App\Http\Requests\TodoStoreRequest;
 use App\Http\Requests\TodoUpdateRequest;
-use App\Http\Requests\UpdateOrderRequest;
+use App\Http\Requests\UpdatePositionRequest;
 use App\Models\Todo;
 use App\Services\Todo\TodoService;
 use Illuminate\Http\JsonResponse;
@@ -17,7 +17,7 @@ class TodoController extends Controller
 {
   public function __construct(private readonly TodoService $todoService)
   {
-    $this->middleware('can:isOwner,todo')->only(['update', 'destroy', 'updateOrder']);
+    $this->middleware('can:isOwner,todo')->only(['update', 'destroy', 'updatePosition']);
   }
 
   public function index(): Response
@@ -55,9 +55,9 @@ class TodoController extends Controller
     return response()->json($todos);
   }
 
-  public function updateOrder(UpdateOrderRequest $request, Todo $todo): JsonResponse
+  public function updatePosition(UpdatePositionRequest $request, Todo $todo): JsonResponse
   {
-    $this->todoService->updateOrder($todo, $request->get('newOrder'));
+    $this->todoService->updatePosition($todo, $request->get('newPosition'));
     return response()->json();
   }
 }
