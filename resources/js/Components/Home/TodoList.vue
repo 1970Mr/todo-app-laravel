@@ -33,7 +33,6 @@ watch([currentPage, statusFilter, searchItem, runFetch], async () => {
 async function onDraggable(data) {
   const todo = data['moved']['element']
   todo.order = await todoProvider.value.changeOrder(todo, todos.value)
-  runFetch.value = new Date()
 }
 
 const paginateHandler = (page) => {
@@ -88,7 +87,6 @@ function doFilter(filter) {
 async function changeStatus(todoItem) {
   todoItem.completed = !todoItem.completed
   await todoProvider.value.update(todoItem)
-  runFetch.value = new Date()
 }
 </script>
 

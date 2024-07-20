@@ -1,20 +1,20 @@
 import TodoOrder from "@/Helpers/TodoOrder.js";
 
 class TodoLocalStorage {
-  async get(filteredData, page = 1, perPage = 5) {
+  async get(page = 1, perPage = 5, statusFilter = null, search = null) {
     const todos = this._getTodos();
 
     // Apply filters
     let filteredTodos = todos;
-    if (filteredData.filter === 'active') {
+    if (statusFilter === 'active') {
       filteredTodos = filteredTodos.filter(todo => !todo.completed);
-    } else if (filteredData.filter === 'completed') {
+    } else if (search === 'completed') {
       filteredTodos = filteredTodos.filter(todo => todo.completed);
     }
 
     // Apply search
-    if (filteredData.search) {
-      const searchTerm = filteredData.search.toLowerCase();
+    if (search) {
+      const searchTerm = search.toLowerCase();
       filteredTodos = filteredTodos.filter(todo => todo.text.toLowerCase().includes(searchTerm));
     }
 
