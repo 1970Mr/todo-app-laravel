@@ -18,22 +18,29 @@ const todosInfo = ref('')
 const currentPage = ref(1)
 const user = ref({})
 const runFetch = ref()
+const isDragging = ref(false);
 
 user.value = usePage().props?.auth?.user
 csrfToken.value = usePage().props?.csrf_token;
 todoProvider.value = TodoProvider.createTodoProvider(user.value?.id)
 
 watch([currentPage, statusFilter, searchItem, runFetch], async () => {
-    todosInfo.value = await todoProvider.value.get(currentPage.value, 5, statusFilter.value, searchItem.value)
-    todos.value = todosInfo.value.data
+    await fetchTodos()
   },
   {immediate: true}
 )
 
+async function fetchTodos() {
+  todosInfo.value = await todoProvider.value.get(currentPage.value, 5, statusFilter.value, searchItem.value)
+  todos.value = todosInfo.value.data
+}
+
 async function onDraggable(data) {
+  isDragging.value = true;
   const todo = data['moved']['element']
-  todo.position = await todoProvider.value.updatePosition(todo, todos.value)
-  runFetch.value = new Date()
+  await todoProvider.value.updatePosition(todo, todos.value)
+  await fetchTodos()
+  isDragging.value = false;
 }
 
 const paginateHandler = (page) => {
@@ -140,6 +147,8 @@ async function changeStatus(todoItem) {
     class="space-y-4"
     v-model="todos"
     group="people"
+    :disabled="isDragging"
+    :class="{ 'draggable-disabled': isDragging }"
     @start="drag=true"
     @end="drag=false"
     item-key="id"
