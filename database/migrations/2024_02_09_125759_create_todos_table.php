@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TaskStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,10 +14,9 @@ return new class extends Migration {
     Schema::create('todos', static function (Blueprint $table) {
       $table->id();
       $table->string('text');
-      $table->boolean('completed')->default(0);
-      $table->bigInteger('position')->default(0);
-      $table->unsignedBigInteger('user_id');
-      $table->foreign('user_id')->references('id')->on('users');
+      $table->tinyInteger('status')->default(TaskStatus::Active)->comment("0: Active, 1: Completed");
+      $table->integer('position')->default(0);
+      $table->foreignId('user_id')->constrained('users');
       $table->timestamps();
     });
   }

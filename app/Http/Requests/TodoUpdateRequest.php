@@ -23,8 +23,7 @@ class TodoUpdateRequest extends FormRequest
   {
     return [
       'text' => 'nullable|string|max:255',
-      'completed' => 'nullable',
-      'order' => 'nullable|integer',
+      'status' => 'nullable',
     ];
   }
 }

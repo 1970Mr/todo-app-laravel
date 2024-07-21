@@ -3,6 +3,7 @@
 namespace App\Services\Todo;
 
 use App\DTOs\TodoDTO;
+use App\Enums\TaskStatus;
 use App\Models\Todo;
 use Exception;
 use Illuminate\Contracts\Pagination\Paginator;
@@ -24,26 +25,28 @@ class TodoService
   public function getTodos(int $perPage = 5, ?string $status = null, ?string $search = null): Paginator
   {
     $todosQuery = auth()->user()->todos();
-    $this->setStatus($status, $todosQuery);
+    $this->checkStatus($status, $todosQuery);
     $this->adjustSearch($search, $todosQuery);
     return $todosQuery->orderBy('position', 'desc')->paginate($perPage);
   }
 
-  private function setStatus(?string $status, HasMany $todosQuery): void
+  private function checkStatus(?string $statusName, HasMany $todosQuery): void
   {
-    if (!$status) {
+    if (!$statusName) {
       return;
     }
-    $statusList = $this->statusList($status);
-    $todosQuery->whereIn('completed', $statusList);
+    $statusValue = $this->getStatus($statusName);
+    if ($statusValue !== null) {
+      $todosQuery->where('status', $statusValue);
+    }
   }
 
-  private function statusList($filter): array
+  private function getStatus($status): ?TaskStatus
   {
-    return match ($filter) {
-      'active' => [0],
-      'completed' => [1],
-      default => [0, 1],
+    return match ($status) {
+      'active' => TaskStatus::Active,
+      'completed' => TaskStatus::Completed,
+      default => null,
     };
   }
 

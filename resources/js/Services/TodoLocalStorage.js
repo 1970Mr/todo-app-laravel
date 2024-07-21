@@ -7,9 +7,9 @@ class TodoLocalStorage {
     // Apply filters
     let filteredTodos = todos;
     if (statusFilter === 'active') {
-      filteredTodos = filteredTodos.filter(todo => !todo.completed);
-    } else if (search === 'completed') {
-      filteredTodos = filteredTodos.filter(todo => todo.completed);
+      filteredTodos = filteredTodos.filter(todo => !todo.status);
+    } else if (statusFilter === 'completed') {
+      filteredTodos = filteredTodos.filter(todo => todo.status);
     }
 
     // Apply search
@@ -45,7 +45,7 @@ class TodoLocalStorage {
   async store(data) {
     const todos = await this._getTodos();
     const lastPosition = todos.length > 0 ? todos[0]?.position : 0
-    const newTodo = { id: this._generateUniqueId(), text: data.text, completed: data.completed, position: lastPosition + 1 };
+    const newTodo = { id: this._generateUniqueId(), text: data.text, status: 0, position: lastPosition + 1 };
     todos.unshift(newTodo);
     localStorage.setItem('todos', JSON.stringify(todos));
     return Promise.resolve(newTodo);
@@ -60,7 +60,7 @@ class TodoLocalStorage {
 
   async update(data) {
     const todos = await this._getTodos();
-    const updatedTodo = { id: data.id, text: data.text, completed: data.completed, position: data.position };
+    const updatedTodo = { id: data.id, text: data.text, status: Number(data.status), position: data.position };
     const updatedTodos = todos.map(todo => (todo.id === data.id ? updatedTodo : todo));
     localStorage.setItem('todos', JSON.stringify(updatedTodos));
     return Promise.resolve(data);

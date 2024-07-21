@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\TaskStatus;
 use App\Models\Todo;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -23,7 +24,7 @@ class TodoFactory extends Factory
     $user_id = User::first()->id;
     return [
       'text' => fake()->text(40),
-      'completed' => Arr::random([0, 1]),
+      'status' => Arr::random(TaskStatus::values()),
       'position' => 0,
       'user_id' => $user_id,
     ];

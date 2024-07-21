@@ -93,7 +93,7 @@ function doFilter(filter) {
 }
 
 async function changeStatus(todoItem) {
-  todoItem.completed = !todoItem.completed
+  todoItem.status = !todoItem.status
   await todoProvider.value.update(todoItem)
 }
 </script>
@@ -184,7 +184,7 @@ async function changeStatus(todoItem) {
         <div class="flex items-center justify-between bg-white bg-opacity-50 rounded-lg px-4 py-2" v-if="!element.inEdit">
           <span
             class="flex-1 text-gray-800 break-all select-none"
-            :class="element.completed ? 'line-through' : ''"
+            :class="element.status ? 'line-through' : ''"
           >
             <span @dblclick.stop="onEdit(element)">{{ element.text }}</span>
           </span>
@@ -204,11 +204,11 @@ async function changeStatus(todoItem) {
             <!-- completed/Uncompleted button -->
             <button
               class="text-green-500 hover:text-green-700"
-              title="completed"
+              :title="element.status ? 'uncompleted' : 'completed'"
               @click="changeStatus(element)"
             >
-              <i class="bx bx-check completed-icon" v-if="!element.completed"></i>
-              <i class="bx bx-check-double completed-icon" v-if="element.completed"></i>
+              <i class="bx bx-check completed-icon" v-if="!element.status"></i>
+              <i class="bx bx-check-double completed-icon" v-if="element.status"></i>
             </button>
           </div>
         </div>

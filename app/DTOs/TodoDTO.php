@@ -2,12 +2,14 @@
 
 namespace App\DTOs;
 
+use App\Enums\TaskStatus;
+
 class TodoDTO
 {
   public function __construct(
     public string $text,
-    public ?int $completed = null,
-    public ?int $order = null
+    public int|TaskStatus $status = TaskStatus::Active,
+    public ?int $position = null
   )
   {
   }
@@ -16,8 +18,8 @@ class TodoDTO
   {
     return [
       'text' => $this->text,
-      'completed' => $this->completed,
-      'order' => $this->order,
+      'status' => $this->status,
+      'position' => $this->position,
     ];
   }
 }

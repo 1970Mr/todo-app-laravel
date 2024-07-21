@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Enums\TaskStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +13,7 @@ class Todo extends Model
 
   protected $fillable = [
     'text',
-    'completed',
+    'status',
     'position',
     'user_id',
   ];
@@ -23,12 +23,11 @@ class Todo extends Model
     'updated_at',
   ];
 
-  protected function completed(): Attribute
+  protected function casts(): array
   {
-    return Attribute::make(
-      get: static fn(?string $value) => (bool)$value,
-      set: static fn(?string $value) => (bool)$value,
-    );
+    return [
+      'status' => TaskStatus::class
+    ];
   }
 
   public function user(): BelongsTo
