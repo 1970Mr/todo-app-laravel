@@ -4,8 +4,9 @@ namespace App\Models;
 
 use App\Enums\TaskStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+//use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use MongoDB\Laravel\Eloquent\Model;
 
 class Todo extends Model
 {
@@ -32,6 +33,6 @@ class Todo extends Model
 
   public function user(): BelongsTo
   {
-    return $this->belongsTo(User::class);
+    return $this->belongsTo(User::class, 'user_id', '_id');
   }
 }

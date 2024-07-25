@@ -60,22 +60,27 @@ class TodoService
 
   public function updatePosition(Todo $todo, $newPosition): void
   {
-    DB::beginTransaction();
-    try {
-      $todo->update(['position' => $newPosition]);
-      $this->managePositionUniqueness($todo);
-      DB::commit();
-    } catch (Exception $e) {
-      DB::rollBack();
-    }
+    $todo->update(['position' => $newPosition]);
+    $this->managePositionUniqueness($todo);
+
+//    Replication must be enabled to use transaction
+//    DB::beginTransaction();
+//    try {
+//      $todo->update(['position' => $newPosition]);
+//      $this->managePositionUniqueness($todo);
+//      DB::commit();
+//    } catch (Exception $e) {
+//      DB::rollBack();
+//    }
   }
 
   private function managePositionUniqueness(Todo $todo): void
   {
     $positionNotUnique = auth()->user()->todos()
       ->where('position', $todo->position)
-      ->whereNot('id', $todo->id)
+      ->whereNot('_id', $todo->_id)
       ->exists();
+    logger($positionNotUnique);
     if ($positionNotUnique) {
       $this->incrementOtherPositions($todo);
     }
@@ -85,7 +90,7 @@ class TodoService
   {
     auth()->user()->todos()
       ->where('position', '>=', $todo->position)
-      ->whereNot('id', $todo->id)
+      ->whereNot('_id', $todo->_id)
       ->increment('position');
   }
 }

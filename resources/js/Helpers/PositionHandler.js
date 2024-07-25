@@ -1,6 +1,6 @@
 class PositionHandler {
   static newPosition(todo, todos) {
-    const index = todos.findIndex((item) => item.id === todo['id'])
+    const index = todos.findIndex((item) => item._id === todo['_id'])
     const previousItem = todos[index - 1];
     const secondItem = todos[1];
     const lastItem = todos[todos.length - 1];

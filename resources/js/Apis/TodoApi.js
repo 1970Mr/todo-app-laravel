@@ -35,7 +35,7 @@ class TodoApi {
 
   async update(data) {
     try {
-      const response = await axios.put(route('todos.update', { todo: data.id }), data);
+      const response = await axios.put(route('todos.update', { todo: data._id }), data);
       return response.data;
     } catch (error) {
       console.error('Error updating todo:', error);
@@ -46,7 +46,7 @@ class TodoApi {
   async updatePosition(todo, todos) {
     try {
       const newPosition = PositionHandler.newPosition(todo, todos)
-      await axios.put(route('todos.update-position', {todo: todo.id}), {newPosition})
+      await axios.put(route('todos.update-position', {todo: todo._id}), {newPosition})
       return newPosition;
     } catch (error) {
       console.error('Error changing todos position:', error);

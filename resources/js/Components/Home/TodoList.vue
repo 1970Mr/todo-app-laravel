@@ -22,7 +22,7 @@ const isDragging = ref(false);
 
 user.value = usePage().props?.auth?.user
 csrfToken.value = usePage().props?.csrf_token;
-todoProvider.value = TodoProvider.createTodoProvider(user.value?.id)
+todoProvider.value = TodoProvider.createTodoProvider(user.value?._id)
 
 watch([currentPage, statusFilter, searchItem, runFetch], async () => {
     await fetchTodos()
@@ -61,10 +61,10 @@ function closeDeleteModal() {
 }
 
 async function onDelete() {
-  const response = await todoProvider.value.destroy(selectedTodoItem.value.id)
+  const response = await todoProvider.value.destroy(selectedTodoItem.value._id)
   if (!response) return
   todos.value = todos.value.filter(
-    (item) => item.id !== selectedTodoItem.value.id
+    (item) => item._id !== selectedTodoItem.value._id
   )
   closeDeleteModal()
   runFetch.value = new Date()
@@ -100,7 +100,7 @@ async function changeStatus(todoItem) {
 
 <template>
   <!--  Login and Register  -->
-  <div class="flex mb-4" v-if="!user?.id">
+  <div class="flex mb-4" v-if="!user?._id">
     <a :href="route('login')" class="text-white hover:text-gray-200 mr-5 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
       <i class="bx bx-log-in mr-1"></i>
       <span>Login</span>
@@ -112,7 +112,7 @@ async function changeStatus(todoItem) {
   </div>
 
   <!--  Logout  -->
-  <div class="flex mb-4" v-if="user?.id">
+  <div class="flex mb-4" v-if="user?._id">
     <form :action="route('logout')" method="POST">
       <button type="submit" class="text-white hover:text-gray-200 flex items-center bg-opacity-25 bg-white bg-blur rounded-lg p-3">
         <i class="bx bx-log-out mr-1"></i>
@@ -157,7 +157,7 @@ async function changeStatus(todoItem) {
     <!-- Single todo item -->
     <template #item="{element}">
       <div
-        :id="element.id"
+        :id="element._id"
         @dblclick="changeStatus(element)"
       >
         <div class="flex items-center justify-between" v-if="element.inEdit">
