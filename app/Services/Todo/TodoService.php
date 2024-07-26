@@ -5,10 +5,9 @@ namespace App\Services\Todo;
 use App\DTOs\TodoDTO;
 use App\Enums\TaskStatus;
 use App\Models\Todo;
-use Exception;
 use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class TodoService
 {
@@ -24,13 +23,13 @@ class TodoService
 
   public function getTodos(int $perPage = 5, ?string $status = null, ?string $search = null): Paginator
   {
-    $todosQuery = auth()->user()->todos();
+    $todosQuery = $this->getUserTodosQuery();
     $this->checkStatus($status, $todosQuery);
     $this->adjustSearch($search, $todosQuery);
     return $todosQuery->orderBy('position', 'desc')->paginate($perPage);
   }
 
-  private function checkStatus(?string $statusName, HasMany $todosQuery): void
+  private function checkStatus(?string $statusName, Builder $todosQuery): void
   {
     if (!$statusName) {
       return;
@@ -50,7 +49,7 @@ class TodoService
     };
   }
 
-  private function adjustSearch(?string $search, HasMany $todosQuery): void
+  private function adjustSearch(?string $search, Builder $todosQuery): void
   {
     if (!$search) {
       return;
@@ -76,11 +75,10 @@ class TodoService
 
   private function managePositionUniqueness(Todo $todo): void
   {
-    $positionNotUnique = auth()->user()->todos()
+    $positionNotUnique = $this->getUserTodosQuery()
       ->where('position', $todo->position)
       ->whereNot('_id', $todo->_id)
       ->exists();
-    logger($positionNotUnique);
     if ($positionNotUnique) {
       $this->incrementOtherPositions($todo);
     }
@@ -88,9 +86,14 @@ class TodoService
 
   private function incrementOtherPositions(Todo $todo): void
   {
-    auth()->user()->todos()
+    $this->getUserTodosQuery()
       ->where('position', '>=', $todo->position)
       ->whereNot('_id', $todo->_id)
       ->increment('position');
+  }
+
+  private function getUserTodosQuery(): Builder
+  {
+    return Todo::query()->where('user_id', Auth::id());
   }
 }
