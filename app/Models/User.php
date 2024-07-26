@@ -5,6 +5,8 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
+use Illuminate\Contracts\Auth\CanResetPassword;
+use \Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 //use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,9 +14,9 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use MongoDB\Laravel\Eloquent\Model;
 
-class User extends Model implements Authenticatable
+class User extends Model implements Authenticatable, CanResetPassword
 {
-  use HasApiTokens, HasFactory, Notifiable, AuthenticatableTrait;
+  use HasApiTokens, HasFactory, Notifiable, AuthenticatableTrait, CanResetPasswordTrait;
 
   /**
    * The attributes that are mass assignable.
