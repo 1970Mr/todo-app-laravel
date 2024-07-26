@@ -1,11 +1,13 @@
 import PositionHandler from "@/Helpers/PositionHandler.js";
 
 class TodoLocalStorage {
-  async get(page = 1, perPage = 5, statusFilter = null, search = null) {
-    const todos = this._getTodos();
+  constructor(localStorageKey = 'todos_with_mongo') {
+    this.localStorageKey = localStorageKey;
+  }
 
+  async get(page = 1, perPage = 5, statusFilter = null, search = null) {
     // Apply filters
-    let filteredTodos = todos;
+    let filteredTodos = await this._getTodos();
     if (statusFilter === 'active') {
       filteredTodos = filteredTodos.filter(todo => !todo.status);
     } else if (statusFilter === 'completed') {
@@ -41,20 +43,19 @@ class TodoLocalStorage {
     });
   }
 
-
   async store(data) {
     const todos = await this._getTodos();
     const lastPosition = todos.length > 0 ? todos[0]?.position : 0
     const newTodo = { _id: this._generateUniqueId(), text: data.text, status: 0, position: lastPosition + 1 };
     todos.unshift(newTodo);
-    localStorage.setItem('todos', JSON.stringify(todos));
+    localStorage.setItem(this.localStorageKey, JSON.stringify(todos));
     return Promise.resolve(newTodo);
   }
 
   async destroy(id) {
     const todos = await this._getTodos();
     const updatedTodos = todos.filter(todo => todo._id !== id);
-    localStorage.setItem('todos', JSON.stringify(updatedTodos));
+    localStorage.setItem(this.localStorageKey, JSON.stringify(updatedTodos));
     return Promise.resolve(true);
   }
 
@@ -62,7 +63,7 @@ class TodoLocalStorage {
     const todos = await this._getTodos();
     const updatedTodo = { _id: data._id, text: data.text, status: Number(data.status), position: data.position };
     const updatedTodos = todos.map(todo => (todo._id === data._id ? updatedTodo : todo));
-    localStorage.setItem('todos', JSON.stringify(updatedTodos));
+    localStorage.setItem(this.localStorageKey, JSON.stringify(updatedTodos));
     return Promise.resolve(data);
   }
 
@@ -74,7 +75,7 @@ class TodoLocalStorage {
       if (item.position >= newPosition && item._id !== todo._id) item.position++
       return item
     })
-    localStorage.setItem('todos', JSON.stringify(updatedTodos));
+    localStorage.setItem(this.localStorageKey, JSON.stringify(updatedTodos));
     return Promise.resolve(newPosition);
   }
 
@@ -83,10 +84,10 @@ class TodoLocalStorage {
   }
 
   _getTodos() {
-    let todos = localStorage.getItem('todos');
+    let todos = localStorage.getItem(this.localStorageKey);
     todos = todos ? JSON.parse(todos) : [];
     todos.sort((a, b) => a.position - b.position).reverse()
-    return todos
+    return Promise.resolve(todos)
   }
 }
 
