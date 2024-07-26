@@ -1,6 +1,6 @@
-## Todo App with Laravel, Vue.js, and Tailwind CSS
+## Todo App with Laravel, Vue.js, and Tailwind CSS (MongoDB Version)
 
-This project is a Todo application built using Laravel, Vue.js, and Tailwind CSS.
+This project is a Todo application built using Laravel, Vue.js, and Tailwind CSS with MongoDB as the database.
 
 ### Screenshots
 
@@ -29,6 +29,7 @@ This project is a Todo application built using Laravel, Vue.js, and Tailwind CSS
 - **Laravel:** A PHP web application framework for building efficient and secure web applications.
 - **Vue.js:** A progressive JavaScript framework for building user interfaces.
 - **Tailwind CSS:** A utility-first CSS framework for building custom designs quickly and easily.
+- **MongoDB:** A NoSQL database for storing todo items.
 
 ### Getting Started
 
@@ -65,12 +66,12 @@ To run this project locally, follow these steps:
    php artisan key:generate
    ```
 
-6. Configure the database connection in the `.env` file:
+6. Configure the database connection in the `.env` file for MongoDB:
 
    ```env
-   DB_CONNECTION=mysql
+   DB_CONNECTION=mongodb
    DB_HOST=127.0.0.1
-   DB_PORT=3306
+   DB_PORT=27017
    DB_DATABASE=your_database_name
    DB_USERNAME=your_database_username
    DB_PASSWORD=your_database_password
@@ -99,8 +100,12 @@ To run this project locally, follow these steps:
 ### Authentication and Local Storage
 
 - This application utilizes both database storage and local storage based on the user's authentication status.
-- When a user is logged in, todo items are stored in the database to ensure data persistence and security.
+- When a user is logged in, todo items are stored in the MongoDB database to ensure data persistence and security.
 - If a user is not logged in, todo items are stored in the local storage of the browser, providing a seamless experience without the need for authentication.
+
+### MySQL Version
+
+If you are interested in the MySQL version of this project, you can check out the main branch [here](https://github.com/1970Mr/todo-app-laravel).
 
 ### Contributing
 
