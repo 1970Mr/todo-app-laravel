@@ -29,6 +29,7 @@ This project is a Todo application built using Laravel, Vue.js, and Tailwind CSS
 - **Laravel:** A PHP web application framework for building efficient and secure web applications.
 - **Vue.js:** A progressive JavaScript framework for building user interfaces.
 - **Tailwind CSS:** A utility-first CSS framework for building custom designs quickly and easily.
+- **MySQL:** A relational database for storing todo items.
 
 ### Getting Started
 
@@ -101,6 +102,10 @@ To run this project locally, follow these steps:
 - This application utilizes both database storage and local storage based on the user's authentication status.
 - When a user is logged in, todo items are stored in the database to ensure data persistence and security.
 - If a user is not logged in, todo items are stored in the local storage of the browser, providing a seamless experience without the need for authentication.
+
+### MongoDB Version
+
+If you are interested in the MongoDB version of this project, you can check out the MongoDB branch [here](https://github.com/1970Mr/todo-app-laravel/tree/mongodb).
 
 ### Contributing
 
