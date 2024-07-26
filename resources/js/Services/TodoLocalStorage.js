@@ -45,7 +45,7 @@ class TodoLocalStorage {
   async store(data) {
     const todos = await this._getTodos();
     const lastPosition = todos.length > 0 ? todos[0]?.position : 0
-    const newTodo = { id: this._generateUniqueId(), text: data.text, status: 0, position: lastPosition + 1 };
+    const newTodo = { _id: this._generateUniqueId(), text: data.text, status: 0, position: lastPosition + 1 };
     todos.unshift(newTodo);
     localStorage.setItem('todos', JSON.stringify(todos));
     return Promise.resolve(newTodo);
@@ -53,15 +53,15 @@ class TodoLocalStorage {
 
   async destroy(id) {
     const todos = await this._getTodos();
-    const updatedTodos = todos.filter(todo => todo.id !== id);
+    const updatedTodos = todos.filter(todo => todo._id !== id);
     localStorage.setItem('todos', JSON.stringify(updatedTodos));
     return Promise.resolve(true);
   }
 
   async update(data) {
     const todos = await this._getTodos();
-    const updatedTodo = { id: data.id, text: data.text, status: Number(data.status), position: data.position };
-    const updatedTodos = todos.map(todo => (todo.id === data.id ? updatedTodo : todo));
+    const updatedTodo = { _id: data._id, text: data.text, status: Number(data.status), position: data.position };
+    const updatedTodos = todos.map(todo => (todo._id === data._id ? updatedTodo : todo));
     localStorage.setItem('todos', JSON.stringify(updatedTodos));
     return Promise.resolve(data);
   }
@@ -70,8 +70,8 @@ class TodoLocalStorage {
     const newPosition = PositionHandler.newPosition(todo, todos)
     const allTodos = await this._getTodos();
     const updatedTodos = allTodos.map(item => {
-      if (item.id === todo.id) item.position = newPosition
-      if (item.position >= newPosition && item.id !== todo.id) item.position++
+      if (item._id === todo._id) item.position = newPosition
+      if (item.position >= newPosition && item._id !== todo._id) item.position++
       return item
     })
     localStorage.setItem('todos', JSON.stringify(updatedTodos));
