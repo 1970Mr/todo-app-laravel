@@ -119,4 +119,4 @@ Contributions are welcome! If you'd like to contribute to this project, please f
 
 ### License
 
-This project is licensed under the [MIT License](LICENSE). Feel free to use and modify the code as per your requirements.
+This project is licensed under the [MIT License](LICENSE.md). Feel free to use and modify the code as per your requirements.
